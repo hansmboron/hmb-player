@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "412948076040",
+    "project_id": "hmb-player",
+    "storage_bucket": "hmb-player.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:412948076040:android:ac6081a87c907eb7b763bd",
+        "android_client_info": {
+          "package_name": "br.com.hansmboron.hmbplayer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "412948076040-bsg99ft1m0r7u70kplgod9lqvsg3b6rq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.hansmboron.hmbplayer",
+            "certificate_hash": "be4d31756ef903d7645111b58f7e3fa85c292e9b"
+          }
+        },
+        {
+          "client_id": "412948076040-fc3hid8g46i76ogs712ka2ardn1dih52.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIBrD1AaqfeLZnRAL3OCQCqry1XEbHrmo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "412948076040-fc3hid8g46i76ogs712ka2ardn1dih52.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
