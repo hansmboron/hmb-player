@@ -61,23 +61,63 @@ class PlaylistPage extends GetView<PlaylistController> {
                     ),
                   ),
                 ),
+                Obx(
+                  () => Visibility(
+                    visible: controller.audioList.isNotEmpty,
+                    child: Positioned(
+                      bottom: 110,
+                      child: Text(
+                        controller.audioList.first.title!,
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                    ),
+                  ),
+                ),
                 Positioned(
                   bottom: 6,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.black54,
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                  child: Obx(
+                    () => Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.black54,
+                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                      ),
+                      width: _size.width * .95,
+                      height: 80,
+                      child: controller.audioList.isNotEmpty
+                          ? Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                GestureDetector(
+                                  onTap: controller.onPlayBtn,
+                                  child: Icon(
+                                    controller.isPlaying.value
+                                        ? Icons.pause_circle
+                                        : Icons.play_circle,
+                                    color: context.themeOrange,
+                                    size: 50,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : const Center(
+                              child: Text(
+                                'Selecione para ouvir',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ),
                     ),
-                    width: _size.width * .95,
-                    height: 80,
                   ),
-                )
+                ),
               ],
             ),
             const Text("Audios:"),
             Container(
               height: _size.height * 0.7,
-              color: Colors.blue,
               child: FutureBuilder<QuerySnapshot>(
                 future: FirebaseFirestore.instance
                     .collection('playlists/${snapshot.id}/audios')
@@ -105,12 +145,21 @@ class PlaylistPage extends GetView<PlaylistController> {
                       physics: const BouncingScrollPhysics(),
                       padding: const EdgeInsets.all(10),
                       children: snapshot.data!.docs.map((d) {
-                        controller.audioList.add(AudioModel.fromDocument(d));
-                        return InkWell(
-                          onTap: () {},
-                          child: Text(
-                            d.get('title'),
-                          ),
+                        AudioModel audio = AudioModel.fromDocument(d);
+                        return Column(
+                          children: [
+                            ListTile(
+                              onTap: () {
+                                controller.setSelected(audio);
+                              },
+                              dense: false,
+                              leading: const Icon(Icons.play_arrow),
+                              title: Text(
+                                "${audio.title} (${audio.author})",
+                              ),
+                            ),
+                            const Divider(height: 0),
+                          ],
                         );
                       }).toList(),
                     );

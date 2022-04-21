@@ -24,8 +24,8 @@ class AudioModel {
 
   AudioModel.fromDocument(DocumentSnapshot doc) {
     id = doc.id;
-    title = doc['title'] as String;
-    audio = doc['audio'] as String;
-    author = doc['author'] as String;
+    title = doc.get('title');
+    audio = doc.get('audio');
+    author = doc.get('author');
   }
 }
