@@ -50,12 +50,12 @@ class HomePage extends GetView<HomeController> {
               );
             } else if (snapshot.hasError) {
               return const Center(
-                child: Text('Erro ao carregar produtos!',
+                child: Text('Erro ao carregar playlists!',
                     style: TextStyle(color: Colors.red, fontSize: 30)),
               );
             } else if (snapshot.data!.size <= 0) {
               return const Center(
-                child: Text('Erro ao carregar produtos!',
+                child: Text('Erro ao carregar playlists!',
                     style: TextStyle(color: Colors.red, fontSize: 30)),
               );
             } else {
