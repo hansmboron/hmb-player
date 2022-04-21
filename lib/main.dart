@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hmbplayer/modules/login/login_bindings.dart';
+import 'package:hmbplayer/core/ui/theme_extensions.dart';
 import 'package:hmbplayer/routes/auth_routers.dart';
 import 'package:hmbplayer/routes/home_routers.dart';
 
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       title: 'HMB Player',
       initialBinding: ApplicationBindings(),
       theme: ThemeData(
-        primarySwatch: Colors.deepOrange,
+        primarySwatch: context.themeOrange,
       ),
       getPages: [
         ...AuthRouters.routers,

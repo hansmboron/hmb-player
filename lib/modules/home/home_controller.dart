@@ -7,4 +7,15 @@ class HomeController extends GetxController {
 
   HomeController({required LoginService loginService})
       : _loginService = loginService;
+
+  void handleClick(String value) {
+    switch (value) {
+      case 'Configurações':
+        break;
+      case 'Sair':
+        _loginService.logout();
+        Get.offAllNamed("/login");
+        break;
+    }
+  }
 }
