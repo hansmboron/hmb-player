@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "412948076040-9u4sh178tl4bnk553sk76b0f4g0pt70s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.hansmboron.hmbplayer",
+            "certificate_hash": "171b0f58dce88e32b2db7d9a4791fc2c2689b28a"
+          }
+        },
+        {
           "client_id": "412948076040-bsg99ft1m0r7u70kplgod9lqvsg3b6rq.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
