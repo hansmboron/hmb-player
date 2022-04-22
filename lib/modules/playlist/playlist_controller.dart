@@ -14,7 +14,7 @@ class PlaylistController extends GetxController
   final isSlower = false.obs;
   final isRepeat = false.obs;
   final message = Rxn<MessageModel>();
-  RxList<AudioModel> audioList = RxList();
+  Rx<AudioModel> currentAudio = AudioModel().obs;
   RxBool isPlaying = false.obs;
   Rx<Duration> duration = const Duration(seconds: 0).obs;
   Rx<Duration> position = const Duration(seconds: 0).obs;
@@ -30,9 +30,24 @@ class PlaylistController extends GetxController
     audioPlayer.onAudioPositionChanged.listen((p) {
       position.value = p;
     });
+    audioPlayer.onPlayerCompletion.listen((event) {
+      position.value = const Duration(seconds: 0);
+      if (isRepeat.value) {
+        isPlaying.value = true;
+      } else {
+        isPlaying.value = false;
+        isRepeat.value = false;
+      }
+    });
     loaderListener(loading);
     messageListener(message);
     super.onInit();
+  }
+
+  @override
+  void dispose() {
+    audioPlayer.dispose();
+    super.dispose();
   }
 
   Future<void> onPlayBtn() async {
@@ -64,8 +79,7 @@ class PlaylistController extends GetxController
     position.value = const Duration(seconds: 0);
     duration.value = const Duration(seconds: 0);
     audioPath = audio.audio ?? "";
-    audioList.clear();
-    audioList.add(audio);
+    currentAudio.value = audio;
   }
 
   void changeDuration(double value) {

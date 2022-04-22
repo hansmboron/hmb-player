@@ -16,120 +16,127 @@ class PlaylistPage extends GetView<PlaylistController> {
   @override
   Widget build(BuildContext context) {
     Size _size = MediaQuery.of(context).size;
+    int _orientation = MediaQuery.of(context).orientation.index;
 
-    return Scaffold(
-      backgroundColor: context.themeOrange,
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          children: [
-            Stack(
-              alignment: AlignmentDirectional.topCenter,
-              children: [
-                Hero(
-                  tag: snapshot.id,
-                  child: SizedBox(
-                    width: double.maxFinite,
-                    height: _size.height * 0.4,
-                    child: CachedNetworkImage(
-                      imageUrl: snapshot.get('icon'),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 16),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 2),
-                      decoration: const BoxDecoration(
-                        color: Colors.black54,
-                        borderRadius: BorderRadius.all(Radius.circular(5)),
-                      ),
-                      child: Text(
-                        snapshot.get(
-                          'title',
-                        ),
-                        style: TextStyle(
-                          color: context.themeOrange,
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                        ),
+    return WillPopScope(
+      onWillPop: () async {
+        return await controller.audioPlayer.stop().then((value) => true);
+      },
+      child: Scaffold(
+        backgroundColor: context.themeOrange,
+        body: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Column(
+            children: [
+              Stack(
+                alignment: AlignmentDirectional.topCenter,
+                children: [
+                  Hero(
+                    tag: snapshot.id,
+                    child: SizedBox(
+                      width: double.maxFinite,
+                      height: _size.height * (_orientation == 0 ? 0.4 : 0.6),
+                      child: CachedNetworkImage(
+                        imageUrl: snapshot.get('icon'),
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
-                ),
-                AudioTitle(),
-                Positioned(
-                  bottom: 6,
-                  child: Obx(
-                    () => Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.black54,
-                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 16),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 2),
+                        decoration: const BoxDecoration(
+                          color: Colors.black54,
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                        ),
+                        child: Text(
+                          snapshot.get(
+                            'title',
+                          ),
+                          style: TextStyle(
+                            color: context.themeOrange,
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
-                      width: _size.width * .95,
-                      height: 100,
-                      child: controller.audioList.isNotEmpty
-                          ? BoxPlayer()
-                          : const Center(
-                              child: Text(
-                                'Selecione para ouvir',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 20,
+                    ),
+                  ),
+                  AudioTitle(),
+                  Positioned(
+                    bottom: 6,
+                    child: Obx(
+                      () => Container(
+                        decoration: const BoxDecoration(
+                          color: Colors.black54,
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                        ),
+                        width: _size.width * .95,
+                        height: 100,
+                        child: controller.currentAudio.value.id != null
+                            ? BoxPlayer()
+                            : const Center(
+                                child: Text(
+                                  'Selecione para ouvir',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 20,
+                                  ),
                                 ),
                               ),
-                            ),
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "Playlist ${snapshot.get('title')}:",
-              style: const TextStyle(fontStyle: FontStyle.italic),
-            ),
-            SizedBox(
-              height: _size.height * 0.7,
-              child: FutureBuilder<QuerySnapshot>(
-                future: FirebaseFirestore.instance
-                    .collection('playlists/${snapshot.id}/audios')
-                    .orderBy('title')
-                    .get(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
-                    );
-                  } else if (snapshot.hasError) {
-                    return const Center(
-                      child: Text('Erro ao carregar audios!',
-                          style: TextStyle(color: Colors.red, fontSize: 30)),
-                    );
-                  } else if (snapshot.data!.size <= 0) {
-                    return const Center(
-                      child: Text('Erro ao carregar audios!',
-                          style: TextStyle(color: Colors.red, fontSize: 30)),
-                    );
-                  } else {
-                    return ListView(
-                      physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.all(10),
-                      children: snapshot.data!.docs.map((d) {
-                        AudioModel audio = AudioModel.fromDocument(d);
-                        return PlaylistTile(audio: audio);
-                      }).toList(),
-                    );
-                  }
-                },
+                ],
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                "Playlist ${snapshot.get('title')}:",
+                style: const TextStyle(fontStyle: FontStyle.italic),
+              ),
+              SizedBox(
+                height: _size.height * 0.7,
+                child: FutureBuilder<QuerySnapshot>(
+                  future: FirebaseFirestore.instance
+                      .collection('playlists/${snapshot.id}/audios')
+                      .orderBy('title')
+                      .get(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      );
+                    } else if (snapshot.hasError) {
+                      return const Center(
+                        child: Text('Erro ao carregar audios!',
+                            style: TextStyle(color: Colors.red, fontSize: 30)),
+                      );
+                    } else if (snapshot.data!.size <= 0) {
+                      return const Center(
+                        child: Text('Erro ao carregar audios!',
+                            style: TextStyle(color: Colors.red, fontSize: 30)),
+                      );
+                    } else {
+                      return ListView(
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.all(10),
+                        children: snapshot.data!.docs.map((d) {
+                          AudioModel audio = AudioModel.fromDocument(d);
+                          return PlaylistTile(audio: audio);
+                        }).toList(),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

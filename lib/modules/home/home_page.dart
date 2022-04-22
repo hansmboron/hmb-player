@@ -12,12 +12,25 @@ class HomePage extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     Size _size = MediaQuery.of(context).size;
-    int _orientation = MediaQuery.of(context).orientation.index;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         elevation: 0,
-        title: const Text('HMB Player'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: 45,
+              child: Image.asset(
+                'assets/images/logo.png',
+                fit: BoxFit.contain,
+              ),
+            ),
+            const SizedBox(width: 6),
+            const Text("HMB Player"),
+          ],
+        ),
         actions: <Widget>[
           PopupMenuButton<String>(
             onSelected: controller.handleClick,
@@ -32,6 +45,7 @@ class HomePage extends GetView<HomeController> {
           ),
         ],
       ),
+      drawer: Drawer(),
       backgroundColor: context.themeOrange,
       body: Padding(
         padding: EdgeInsets.symmetric(
@@ -42,10 +56,9 @@ class HomePage extends GetView<HomeController> {
           future: FirebaseFirestore.instance.collection('playlists').get(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(
-                  valueColor:
-                      AlwaysStoppedAnimation<Color>(context.themeOrange),
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
               );
             } else if (snapshot.hasError) {

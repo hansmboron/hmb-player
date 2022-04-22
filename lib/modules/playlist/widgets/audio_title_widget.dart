@@ -16,8 +16,8 @@ class AudioTitle extends StatelessWidget {
         child: Stack(
           children: <Widget>[
             Text(
-              controller.audioList.isNotEmpty
-                  ? controller.audioList.first.title!
+              controller.currentAudio.value.id != null
+                  ? controller.currentAudio.value.title!
                   : '',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
@@ -29,8 +29,8 @@ class AudioTitle extends StatelessWidget {
               ),
             ),
             Text(
-              controller.audioList.isNotEmpty
-                  ? controller.audioList.first.title!
+              controller.currentAudio.value.id != null
+                  ? controller.currentAudio.value.title!
                   : '',
               style: const TextStyle(
                 fontWeight: FontWeight.bold,

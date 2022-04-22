@@ -7,10 +7,10 @@ class AudioModel {
   String? author;
 
   AudioModel({
-    required this.id,
-    required this.title,
-    required this.audio,
-    required this.author,
+    this.id,
+    this.title,
+    this.audio,
+    this.author,
   });
 
   Map<String, dynamic> toMap() {

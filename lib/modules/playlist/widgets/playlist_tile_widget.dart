@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/instance_manager.dart';
-import 'package:hmbplayer/core/ui/theme_extensions.dart';
 import 'package:hmbplayer/modules/playlist/playlist_controller.dart';
 
 import '../../../models/audio_model.dart';
@@ -20,13 +19,17 @@ class PlaylistTile extends StatelessWidget {
       children: [
         ListTile(
           style: ListTileStyle.drawer,
-          tileColor: Colors.white24,
+          tileColor: controller.currentAudio.value.id == audio.id
+              ? Colors.lightGreenAccent.withAlpha(130)
+              : Colors.white24,
           iconColor: Colors.black,
           onTap: () {
             controller.setSelected(audio);
           },
           dense: false,
-          leading: const Icon(Icons.play_arrow),
+          leading: Icon(controller.currentAudio.value.id == audio.id
+              ? Icons.play_arrow_outlined
+              : Icons.play_arrow_rounded),
           title: Text(
             "${audio.title} (${audio.author})",
           ),
