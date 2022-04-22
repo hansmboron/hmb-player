@@ -4,7 +4,10 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:hmbplayer/core/ui/theme_extensions.dart';
 import 'package:hmbplayer/models/audio_model.dart';
+import 'package:hmbplayer/modules/playlist/widgets/box_player_widget.dart';
 import './playlist_controller.dart';
+import 'widgets/audio_title_widget.dart';
+import 'widgets/playlist_tile_widget.dart';
 
 class PlaylistPage extends GetView<PlaylistController> {
   PlaylistPage({Key? key}) : super(key: key);
@@ -15,11 +18,7 @@ class PlaylistPage extends GetView<PlaylistController> {
     Size _size = MediaQuery.of(context).size;
 
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text(snapshot.get('title')),
-      //   backgroundColor: Colors.transparent,
-      // ),
-      // backgroundColor: Theme.of(context).primaryColor,
+      backgroundColor: context.themeOrange,
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Column(
@@ -61,19 +60,7 @@ class PlaylistPage extends GetView<PlaylistController> {
                     ),
                   ),
                 ),
-                Obx(
-                  () => Visibility(
-                    visible: controller.audioList.isNotEmpty,
-                    child: Positioned(
-                      bottom: 110,
-                      child: Text(
-                        controller.audioList.first.title!,
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                    ),
-                  ),
-                ),
+                AudioTitle(),
                 Positioned(
                   bottom: 6,
                   child: Obx(
@@ -83,24 +70,9 @@ class PlaylistPage extends GetView<PlaylistController> {
                         borderRadius: BorderRadius.all(Radius.circular(5)),
                       ),
                       width: _size.width * .95,
-                      height: 80,
+                      height: 100,
                       child: controller.audioList.isNotEmpty
-                          ? Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                GestureDetector(
-                                  onTap: controller.onPlayBtn,
-                                  child: Icon(
-                                    controller.isPlaying.value
-                                        ? Icons.pause_circle
-                                        : Icons.play_circle,
-                                    color: context.themeOrange,
-                                    size: 50,
-                                  ),
-                                ),
-                              ],
-                            )
+                          ? BoxPlayer()
                           : const Center(
                               child: Text(
                                 'Selecione para ouvir',
@@ -115,19 +87,23 @@ class PlaylistPage extends GetView<PlaylistController> {
                 ),
               ],
             ),
-            const Text("Audios:"),
-            Container(
+            const SizedBox(height: 8),
+            Text(
+              "Playlist ${snapshot.get('title')}:",
+              style: const TextStyle(fontStyle: FontStyle.italic),
+            ),
+            SizedBox(
               height: _size.height * 0.7,
               child: FutureBuilder<QuerySnapshot>(
                 future: FirebaseFirestore.instance
                     .collection('playlists/${snapshot.id}/audios')
+                    .orderBy('title')
                     .get(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
-                    return Center(
+                    return const Center(
                       child: CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(context.themeOrange),
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
                     );
                   } else if (snapshot.hasError) {
@@ -146,21 +122,7 @@ class PlaylistPage extends GetView<PlaylistController> {
                       padding: const EdgeInsets.all(10),
                       children: snapshot.data!.docs.map((d) {
                         AudioModel audio = AudioModel.fromDocument(d);
-                        return Column(
-                          children: [
-                            ListTile(
-                              onTap: () {
-                                controller.setSelected(audio);
-                              },
-                              dense: false,
-                              leading: const Icon(Icons.play_arrow),
-                              title: Text(
-                                "${audio.title} (${audio.author})",
-                              ),
-                            ),
-                            const Divider(height: 0),
-                          ],
-                        );
+                        return PlaylistTile(audio: audio);
                       }).toList(),
                     );
                   }

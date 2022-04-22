@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hmbplayer/core/ui/theme_extensions.dart';
-import 'package:hmbplayer/modules/home/widgets/playlist_tile.dart';
+import 'package:hmbplayer/modules/home/widgets/home_tile_widget.dart';
 
 import 'home_controller.dart';
 
