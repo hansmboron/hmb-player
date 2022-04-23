@@ -1,6 +1,8 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
 import 'package:hmbplayer/core/mixins/loader_mixin.dart';
 import 'package:hmbplayer/core/mixins/mesages_mixin.dart';
@@ -15,6 +17,7 @@ class PlaylistController extends GetxController
   final isRepeat = false.obs;
   final message = Rxn<MessageModel>();
   Rx<AudioModel> currentAudio = AudioModel().obs;
+  RxList<AudioModel> localAudios = RxList();
   RxBool isPlaying = false.obs;
   Rx<Duration> duration = const Duration(seconds: 0).obs;
   Rx<Duration> position = const Duration(seconds: 0).obs;
@@ -50,25 +53,23 @@ class PlaylistController extends GetxController
     super.dispose();
   }
 
-  Future<void> onPlayBtn() async {
-    audioPlayer.setUrl(audioPath);
+  Future<void> onPlayBtn({required bool isLocal}) async {
     if (isPlaying.value) {
       await audioPlayer.pause();
       isPlaying.value = false;
     } else {
-      int result = await audioPlayer.play(audioPath);
-      isPlaying.value = true;
-      if (result == 1) {
-        log("Tocando");
-      } else {
-        log("Falha ao carregar");
+      try {
+        audioPlayer.setUrl(audioPath);
+        await audioPlayer.play(audioPath, isLocal: isLocal);
+        isPlaying.value = true;
+      } on Exception catch (e) {
         MessageModel(
           title: 'Erro!',
           message: 'Falha ao reproduzir audio',
           type: MessageType.error,
         );
+        log(e.toString());
       }
-      isPlaying.value = true;
     }
   }
 
@@ -80,6 +81,32 @@ class PlaylistController extends GetxController
     duration.value = const Duration(seconds: 0);
     audioPath = audio.audio ?? "";
     currentAudio.value = audio;
+  }
+
+  Future<void> pickFiles() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowMultiple: true,
+      type: FileType.audio,
+      dialogTitle: "Selecione audios",
+    );
+
+    if (result != null) {
+      for (var item in result.files) {
+        localAudios.add(AudioModel(
+          id: item.identifier,
+          audio: item.path,
+          author: 'local',
+          title: item.name,
+        ));
+      }
+      update();
+    } else {
+      MessageModel(
+        title: 'Erro!',
+        message: 'Nenhua arquivo selecionado!',
+        type: MessageType.error,
+      );
+    }
   }
 
   void changeDuration(double value) {

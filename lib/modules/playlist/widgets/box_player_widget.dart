@@ -5,10 +5,9 @@ import 'package:hmbplayer/modules/playlist/playlist_controller.dart';
 
 class BoxPlayer extends StatelessWidget {
   final PlaylistController controller = Get.find();
+  final bool isLocal;
 
-  BoxPlayer({
-    Key? key,
-  }) : super(key: key);
+  BoxPlayer({Key? key, required this.isLocal}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +40,9 @@ class BoxPlayer extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: controller.onPlayBtn,
+                onTap: () {
+                  controller.onPlayBtn(isLocal: isLocal);
+                },
                 child: Icon(
                   controller.isPlaying.value
                       ? Icons.pause_circle_filled_rounded

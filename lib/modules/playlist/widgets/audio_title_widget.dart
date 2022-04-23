@@ -13,29 +13,35 @@ class AudioTitle extends StatelessWidget {
     return Obx(
       () => Positioned(
         bottom: 115,
+        left: 10,
+        width: MediaQuery.of(context).size.width * .95,
         child: Stack(
           children: <Widget>[
-            Text(
-              controller.currentAudio.value.id != null
-                  ? controller.currentAudio.value.title!
-                  : '',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-                foreground: Paint()
-                  ..style = PaintingStyle.stroke
-                  ..strokeWidth = 1
-                  ..color = Colors.black,
+            Center(
+              child: Text(
+                controller.currentAudio.value.id != null
+                    ? controller.currentAudio.value.title!
+                    : '',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  foreground: Paint()
+                    ..style = PaintingStyle.stroke
+                    ..strokeWidth = 1
+                    ..color = Colors.black,
+                ),
               ),
             ),
-            Text(
-              controller.currentAudio.value.id != null
-                  ? controller.currentAudio.value.title!
-                  : '',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-                color: Colors.white,
+            Center(
+              child: Text(
+                controller.currentAudio.value.id != null
+                    ? controller.currentAudio.value.title!
+                    : '',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  color: Colors.white,
+                ),
               ),
             ),
           ],

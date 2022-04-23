@@ -38,7 +38,10 @@ class PlaylistPage extends GetView<PlaylistController> {
                       width: double.maxFinite,
                       height: _size.height * (_orientation == 0 ? 0.4 : 0.6),
                       child: isLocal
-                          ? Image.asset('assets/images/logo.png')
+                          ? Image.asset(
+                              'assets/images/bg.jpg',
+                              fit: BoxFit.cover,
+                            )
                           : CachedNetworkImage(
                               imageUrl: snapshot.get('icon'),
                               fit: BoxFit.cover,
@@ -82,7 +85,7 @@ class PlaylistPage extends GetView<PlaylistController> {
                         width: _size.width * .95,
                         height: 100,
                         child: controller.currentAudio.value.id != null
-                            ? BoxPlayer()
+                            ? BoxPlayer(isLocal: isLocal)
                             : const Center(
                                 child: Text(
                                   'Selecione para ouvir',
@@ -103,21 +106,22 @@ class PlaylistPage extends GetView<PlaylistController> {
                 style: const TextStyle(fontStyle: FontStyle.italic),
               ),
               SizedBox(
-                height: _size.height * 0.7,
+                height: _size.height * 0.6,
                 child: isLocal
-                    ? ListView.builder(
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.all(10),
-                        itemCount: 1,
-                        itemBuilder: (context, index) {
-                          AudioModel audio = AudioModel(
-                            id: '0',
-                            author: 'teste',
-                            title: 'teste',
-                            audio: 'teste',
+                    ? GetBuilder<PlaylistController>(
+                        init: PlaylistController(),
+                        builder: ((controller) {
+                          return ListView.builder(
+                            physics: const BouncingScrollPhysics(),
+                            padding: const EdgeInsets.all(10),
+                            itemCount: controller.localAudios.length,
+                            itemBuilder: (context, index) {
+                              return PlaylistTile(
+                                audio: controller.localAudios[index],
+                              );
+                            },
                           );
-                          return PlaylistTile(audio: audio);
-                        },
+                        }),
                       )
                     : FutureBuilder<QuerySnapshot>(
                         future: FirebaseFirestore.instance
@@ -160,14 +164,16 @@ class PlaylistPage extends GetView<PlaylistController> {
             ],
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          backgroundColor: Colors.lightGreenAccent,
-          child: const Icon(
-            Icons.add,
-            color: Colors.black,
-          ),
-        ),
+        floatingActionButton: isLocal
+            ? FloatingActionButton(
+                onPressed: controller.pickFiles,
+                tooltip: "Abrir audios(s)",
+                backgroundColor: Colors.green,
+                child: const Icon(
+                  Icons.add,
+                ),
+              )
+            : const SizedBox(),
       ),
     );
   }

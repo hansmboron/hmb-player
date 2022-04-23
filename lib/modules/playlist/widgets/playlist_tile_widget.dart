@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get/instance_manager.dart';
 import 'package:hmbplayer/modules/playlist/playlist_controller.dart';
 
@@ -17,21 +18,23 @@ class PlaylistTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ListTile(
-          style: ListTileStyle.drawer,
-          tileColor: controller.currentAudio.value.id == audio.id
-              ? Colors.lightGreenAccent.withAlpha(130)
-              : Colors.white24,
-          iconColor: Colors.black,
-          onTap: () {
-            controller.setSelected(audio);
-          },
-          dense: false,
-          leading: Icon(controller.currentAudio.value.id == audio.id
-              ? Icons.play_arrow_outlined
-              : Icons.play_arrow_rounded),
-          title: Text(
-            "${audio.title} (${audio.author})",
+        Obx(
+          () => ListTile(
+            style: ListTileStyle.drawer,
+            tileColor: controller.currentAudio.value.id == audio.id
+                ? Colors.lightGreenAccent.withAlpha(130)
+                : Colors.white24,
+            iconColor: Colors.black,
+            onTap: () {
+              controller.setSelected(audio);
+            },
+            dense: false,
+            leading: Icon(controller.currentAudio.value.id == audio.id
+                ? Icons.play_arrow_outlined
+                : Icons.play_arrow_rounded),
+            title: Text(
+              "${audio.title} (${audio.author})",
+            ),
           ),
         ),
         const Divider(height: 0),
