@@ -10,7 +10,8 @@ import 'widgets/audio_title_widget.dart';
 import 'widgets/playlist_tile_widget.dart';
 
 class PlaylistPage extends GetView<PlaylistController> {
-  PlaylistPage({Key? key}) : super(key: key);
+  final bool isLocal;
+  PlaylistPage({Key? key, this.isLocal = false}) : super(key: key);
   final DocumentSnapshot snapshot = Get.arguments;
 
   @override
@@ -32,14 +33,16 @@ class PlaylistPage extends GetView<PlaylistController> {
                 alignment: AlignmentDirectional.topCenter,
                 children: [
                   Hero(
-                    tag: snapshot.id,
+                    tag: isLocal ? 0 : snapshot.id,
                     child: SizedBox(
                       width: double.maxFinite,
                       height: _size.height * (_orientation == 0 ? 0.4 : 0.6),
-                      child: CachedNetworkImage(
-                        imageUrl: snapshot.get('icon'),
-                        fit: BoxFit.cover,
-                      ),
+                      child: isLocal
+                          ? Image.asset('assets/images/logo.png')
+                          : CachedNetworkImage(
+                              imageUrl: snapshot.get('icon'),
+                              fit: BoxFit.cover,
+                            ),
                     ),
                   ),
                   SafeArea(
@@ -53,9 +56,11 @@ class PlaylistPage extends GetView<PlaylistController> {
                           borderRadius: BorderRadius.all(Radius.circular(5)),
                         ),
                         child: Text(
-                          snapshot.get(
-                            'title',
-                          ),
+                          isLocal
+                              ? "Arquivos Local"
+                              : snapshot.get(
+                                  'title',
+                                ),
                           style: TextStyle(
                             color: context.themeOrange,
                             fontSize: 26,
@@ -94,48 +99,73 @@ class PlaylistPage extends GetView<PlaylistController> {
               ),
               const SizedBox(height: 8),
               Text(
-                "Playlist ${snapshot.get('title')}:",
+                "Playlist ${isLocal ? 'Local' : snapshot.get('title')}:",
                 style: const TextStyle(fontStyle: FontStyle.italic),
               ),
               SizedBox(
                 height: _size.height * 0.7,
-                child: FutureBuilder<QuerySnapshot>(
-                  future: FirebaseFirestore.instance
-                      .collection('playlists/${snapshot.id}/audios')
-                      .orderBy('title')
-                      .get(),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const Center(
-                        child: CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      );
-                    } else if (snapshot.hasError) {
-                      return const Center(
-                        child: Text('Erro ao carregar audios!',
-                            style: TextStyle(color: Colors.red, fontSize: 30)),
-                      );
-                    } else if (snapshot.data!.size <= 0) {
-                      return const Center(
-                        child: Text('Erro ao carregar audios!',
-                            style: TextStyle(color: Colors.red, fontSize: 30)),
-                      );
-                    } else {
-                      return ListView(
+                child: isLocal
+                    ? ListView.builder(
                         physics: const BouncingScrollPhysics(),
                         padding: const EdgeInsets.all(10),
-                        children: snapshot.data!.docs.map((d) {
-                          AudioModel audio = AudioModel.fromDocument(d);
+                        itemCount: 1,
+                        itemBuilder: (context, index) {
+                          AudioModel audio = AudioModel(
+                            id: '0',
+                            author: 'teste',
+                            title: 'teste',
+                            audio: 'teste',
+                          );
                           return PlaylistTile(audio: audio);
-                        }).toList(),
-                      );
-                    }
-                  },
-                ),
+                        },
+                      )
+                    : FutureBuilder<QuerySnapshot>(
+                        future: FirebaseFirestore.instance
+                            .collection('playlists/${snapshot.id}/audios')
+                            .orderBy('title')
+                            .get(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return const Center(
+                              child: CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            );
+                          } else if (snapshot.hasError) {
+                            return const Center(
+                              child: Text('Erro ao carregar audios!',
+                                  style: TextStyle(
+                                      color: Colors.red, fontSize: 30)),
+                            );
+                          } else if (snapshot.data!.size <= 0) {
+                            return const Center(
+                              child: Text('Erro ao carregar audios!',
+                                  style: TextStyle(
+                                      color: Colors.red, fontSize: 30)),
+                            );
+                          } else {
+                            return ListView(
+                              physics: const BouncingScrollPhysics(),
+                              padding: const EdgeInsets.all(10),
+                              children: snapshot.data!.docs.map((d) {
+                                AudioModel audio = AudioModel.fromDocument(d);
+                                return PlaylistTile(audio: audio);
+                              }).toList(),
+                            );
+                          }
+                        },
+                      ),
               ),
             ],
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {},
+          backgroundColor: Colors.lightGreenAccent,
+          child: const Icon(
+            Icons.add,
+            color: Colors.black,
           ),
         ),
       ),

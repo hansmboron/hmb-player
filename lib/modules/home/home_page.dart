@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hmbplayer/core/ui/theme_extensions.dart';
 import 'package:hmbplayer/modules/home/widgets/home_tile_widget.dart';
+import 'package:hmbplayer/modules/home/widgets/my_drawer_widget.dart';
 
 import 'home_controller.dart';
 
@@ -45,7 +46,7 @@ class HomePage extends GetView<HomeController> {
           ),
         ],
       ),
-      drawer: Drawer(),
+      drawer: MyDrawer(),
       backgroundColor: context.themeOrange,
       body: Padding(
         padding: EdgeInsets.symmetric(

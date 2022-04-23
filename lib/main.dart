@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:hmbplayer/core/ui/theme_extensions.dart';
 import 'package:hmbplayer/routes/auth_routers.dart';
 import 'package:hmbplayer/routes/home_routers.dart';
+import 'package:hmbplayer/routes/settings_routers.dart';
 
 import 'core/bindings/application_bindings.dart';
 
@@ -23,12 +24,14 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'HMB Player',
       initialBinding: ApplicationBindings(),
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: context.themeOrange,
       ),
       getPages: [
         ...AuthRouters.routers,
         ...HomeRouters.routers,
+        ...SettingsRouters.routers,
       ],
       initialRoute: '/login',
     );

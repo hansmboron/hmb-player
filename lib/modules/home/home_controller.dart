@@ -11,11 +11,16 @@ class HomeController extends GetxController {
   void handleClick(String value) {
     switch (value) {
       case 'Configurações':
+        Get.toNamed('/settings');
         break;
       case 'Sair':
-        _loginService.logout();
-        Get.offAllNamed("/login");
+        logout();
         break;
     }
+  }
+
+  void logout() {
+    _loginService.logout();
+    Get.offAllNamed("/login");
   }
 }

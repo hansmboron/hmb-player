@@ -18,5 +18,10 @@ class HomeRouters {
       binding: PlaylistBindings(),
       page: () => PlaylistPage(),
     ),
+    GetPage(
+      name: '/home/local',
+      binding: PlaylistBindings(),
+      page: () => PlaylistPage(isLocal: true),
+    ),
   ];
 }
