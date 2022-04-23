@@ -22,6 +22,7 @@ class AudioTitle extends StatelessWidget {
                 controller.currentAudio.value.id != null
                     ? controller.currentAudio.value.title!
                     : '',
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
@@ -37,10 +38,11 @@ class AudioTitle extends StatelessWidget {
                 controller.currentAudio.value.id != null
                     ? controller.currentAudio.value.title!
                     : '',
+                textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
-                  color: Colors.white,
+                  color: Colors.lightGreenAccent,
                 ),
               ),
             ),

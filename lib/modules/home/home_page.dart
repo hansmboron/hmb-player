@@ -36,7 +36,8 @@ class HomePage extends GetView<HomeController> {
           PopupMenuButton<String>(
             onSelected: controller.handleClick,
             itemBuilder: (BuildContext context) {
-              return {'Configurações', 'Sair'}.map((String choice) {
+              return {'Abrir Local', 'Configurações', 'Sair'}
+                  .map((String choice) {
                 return PopupMenuItem<String>(
                   value: choice,
                   child: Text(choice),
