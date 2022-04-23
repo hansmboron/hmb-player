@@ -52,6 +52,35 @@ class MyDrawer extends StatelessWidget {
                 Get.toNamed('/settings');
               },
             ),
+            if (controller.isAdmin())
+              Column(
+                children: [
+                  const Divider(height: 0),
+                  ListTile(
+                    iconColor: Colors.red,
+                    textColor: Colors.red,
+                    leading: const Icon(Icons.people_rounded),
+                    title: const Text("Usuários"),
+                    trailing: const Icon(Icons.admin_panel_settings_rounded),
+                    onTap: () {
+                      Get.back();
+                      Get.toNamed('/users');
+                    },
+                  ),
+                  const Divider(height: 0),
+                  ListTile(
+                    iconColor: Colors.red,
+                    textColor: Colors.red,
+                    leading: const Icon(Icons.add_rounded),
+                    title: const Text("Add Audios"),
+                    trailing: const Icon(Icons.admin_panel_settings_rounded),
+                    onTap: () {
+                      Get.back();
+                      Get.toNamed('/upload');
+                    },
+                  ),
+                ],
+              ),
             const Divider(height: 0),
             ListTile(
               leading: const Icon(Icons.info_outline_rounded),

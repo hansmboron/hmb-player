@@ -1,15 +1,12 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
-import 'package:hmbplayer/core/mixins/loader_mixin.dart';
 import 'package:hmbplayer/core/mixins/mesages_mixin.dart';
 import 'package:hmbplayer/models/audio_model.dart';
 
-class PlaylistController extends GetxController
-    with MessagesMixin, LoaderMixin {
+class PlaylistController extends GetxController with MessagesMixin {
   final loading = false.obs;
   final isMuted = false.obs;
   final isFaster = false.obs;
@@ -19,13 +16,14 @@ class PlaylistController extends GetxController
   Rx<AudioModel> currentAudio = AudioModel().obs;
   RxList<AudioModel> localAudios = RxList();
   RxBool isPlaying = false.obs;
-  Rx<Duration> duration = const Duration(seconds: 0).obs;
+  Rx<Duration> duration = const Duration(seconds: 1).obs;
   Rx<Duration> position = const Duration(seconds: 0).obs;
   String audioPath = "";
   late AudioPlayer audioPlayer;
 
   @override
   void onInit() {
+    messageListener(message);
     audioPlayer = AudioPlayer(mode: PlayerMode.MEDIA_PLAYER);
     audioPlayer.onDurationChanged.listen((d) {
       duration.value = d;
@@ -42,8 +40,6 @@ class PlaylistController extends GetxController
         isRepeat.value = false;
       }
     });
-    loaderListener(loading);
-    messageListener(message);
     super.onInit();
   }
 
@@ -62,11 +58,13 @@ class PlaylistController extends GetxController
         audioPlayer.setUrl(audioPath);
         await audioPlayer.play(audioPath, isLocal: isLocal);
         isPlaying.value = true;
-      } on Exception catch (e) {
-        MessageModel(
-          title: 'Erro!',
-          message: 'Falha ao reproduzir audio',
-          type: MessageType.error,
+      } on RangeError catch (e) {
+        message(
+          MessageModel(
+            title: 'Erro!',
+            message: 'Falha ao reproduzir audio',
+            type: MessageType.error,
+          ),
         );
         log(e.toString());
       }
@@ -78,7 +76,7 @@ class PlaylistController extends GetxController
     isPlaying.value = false;
 
     position.value = const Duration(seconds: 0);
-    duration.value = const Duration(seconds: 0);
+    duration.value = const Duration(seconds: 1);
     audioPath = audio.audio ?? "";
     currentAudio.value = audio;
   }
