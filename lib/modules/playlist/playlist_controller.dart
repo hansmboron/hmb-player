@@ -119,7 +119,6 @@ class PlaylistController extends GetxController with MessagesMixin {
   }
 
   Future<void> setSelected(AudioModel audio) async {
-    print(remoteAudios);
     await audioPlayer.stop();
     isPlaying.value = false;
 

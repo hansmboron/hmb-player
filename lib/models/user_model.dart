@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserModel {
   String? uid;
   String? name;
@@ -24,6 +26,13 @@ class UserModel {
       email: map['email'],
       photoUrl: map['photoUrl'],
     );
+  }
+
+  UserModel.fromDocument(DocumentSnapshot doc) {
+    uid = doc.id;
+    name = doc.get('name');
+    email = doc.get('email');
+    photoUrl = doc.get('photoUrl');
   }
 
   String toJson() => json.encode(toMap());

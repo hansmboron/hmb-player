@@ -8,6 +8,9 @@ class LoginPage extends GetView<LoginController> {
 
   @override
   Widget build(BuildContext context) {
+    Size _size = MediaQuery.of(context).size;
+    Orientation _orientation = MediaQuery.of(context).orientation;
+
     return Scaffold(
       body: Stack(
         alignment: Alignment.center,
@@ -23,12 +26,23 @@ class LoginPage extends GetView<LoginController> {
           ),
           Column(
             children: [
-              Padding(
-                padding: EdgeInsets.only(top: Get.height * 0.17),
-                child: Image.asset(
-                  'assets/images/logo.png',
-                  height: Get.width * 0.4,
-                  width: Get.width * 0.4,
+              Visibility(
+                visible: _orientation == Orientation.portrait,
+                child: Padding(
+                  padding: EdgeInsets.only(top: _size.height * 0.18),
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    height: _size.width * 0.4,
+                    width: _size.width * 0.4,
+                  ),
+                ),
+                replacement: Padding(
+                  padding: EdgeInsets.only(top: _size.height * .08),
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    height: 120,
+                    width: 120,
+                  ),
                 ),
               ),
               Stack(
@@ -57,7 +71,7 @@ class LoginPage extends GetView<LoginController> {
               InkWell(
                 onTap: () => controller.login(),
                 child: Container(
-                  margin: const EdgeInsets.only(top: 40),
+                  margin: EdgeInsets.only(top: _size.height * .05),
                   clipBehavior: Clip.antiAlias,
                   width: Get.width * 0.9,
                   decoration: BoxDecoration(
@@ -84,6 +98,14 @@ class LoginPage extends GetView<LoginController> {
                     ],
                   ),
                 ),
+              ),
+              SizedBox(height: _size.height * .04),
+              ElevatedButton.icon(
+                onPressed: () {
+                  Get.toNamed('/home/local');
+                },
+                icon: const Icon(Icons.audiotrack_rounded),
+                label: const Text('Abrir audios'),
               ),
             ],
           )
