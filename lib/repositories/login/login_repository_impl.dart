@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:get_storage/get_storage.dart';
@@ -21,23 +22,26 @@ class LoginRepositoryImpl implements LoginRepository {
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
 
-      User? user = userCredential.user;
+      User? fuser = userCredential.user;
 
-      if (user != null) {
+      if (fuser != null) {
+        UserModel userModel = UserModel(
+          uid: fuser.uid,
+          email: fuser.email,
+          name: fuser.displayName,
+          photoUrl: fuser.photoURL,
+        );
         final box = GetStorage();
-        box.write(
-            'user',
-            UserModel(
-              uid: user.uid,
-              email: user.email,
-              name: user.displayName,
-              photoUrl: user.photoURL,
-            ).toMap());
-        log("USUARIO lOGADO: ${user.displayName}");
-        log("USUARIO lOGADO: ${user.email}");
-      }
+        box.write('user', userModel.toMap());
+        log("USUARIO lOGADO: ${userModel.name}");
+        log("USUARIO lOGADO: ${userModel.email}");
 
-      return user;
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userModel.uid)
+            .set(userModel.toMap());
+      }
+      return fuser;
     }
     throw Exception('Erro ao realizar login com o Google');
   }

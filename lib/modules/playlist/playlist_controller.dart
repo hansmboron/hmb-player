@@ -1,12 +1,15 @@
 import 'dart:developer';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
 import 'package:hmbplayer/core/mixins/mesages_mixin.dart';
 import 'package:hmbplayer/models/audio_model.dart';
+import 'package:hmbplayer/services/home/home_service.dart';
 
 class PlaylistController extends GetxController with MessagesMixin {
+  final HomeService _homeService;
   final loading = false.obs;
   final isMuted = false.obs;
   final isFaster = false.obs;
@@ -15,29 +18,63 @@ class PlaylistController extends GetxController with MessagesMixin {
   final message = Rxn<MessageModel>();
   Rx<AudioModel> currentAudio = AudioModel().obs;
   RxList<AudioModel> localAudios = RxList();
+  RxList<AudioModel> remoteAudios = RxList();
   RxBool isPlaying = false.obs;
   Rx<Duration> duration = const Duration(seconds: 1).obs;
   Rx<Duration> position = const Duration(seconds: 0).obs;
   String audioPath = "";
   late AudioPlayer audioPlayer;
 
+  PlaylistController({required HomeService homeService})
+      : _homeService = homeService;
+
   @override
   void onInit() {
     messageListener(message);
     audioPlayer = AudioPlayer(mode: PlayerMode.MEDIA_PLAYER);
+
     audioPlayer.onDurationChanged.listen((d) {
       duration.value = d;
     });
+
     audioPlayer.onAudioPositionChanged.listen((p) {
       position.value = p;
     });
-    audioPlayer.onPlayerCompletion.listen((event) {
+
+    audioPlayer.onPlayerCompletion.listen((event) async {
       position.value = const Duration(seconds: 0);
       if (isRepeat.value) {
         isPlaying.value = true;
       } else {
         isPlaying.value = false;
         isRepeat.value = false;
+      }
+
+      // auto play next song
+      if (localAudios.isNotEmpty && localAudios.length > 1 && !isRepeat.value) {
+        AudioModel audio =
+            localAudios.firstWhere((a) => a.id == currentAudio.value.id);
+        var pos = localAudios.indexOf(audio);
+        await setSelected(localAudios.length > pos + 1
+                ? localAudios[pos + 1]
+                : localAudios[0])
+            .then(
+          (value) async => await onPlayBtn(isLocal: true),
+        );
+      }
+
+      if (remoteAudios.isNotEmpty &&
+          remoteAudios.length > 1 &&
+          !isRepeat.value) {
+        AudioModel audio =
+            remoteAudios.firstWhere((a) => a.id == currentAudio.value.id);
+        var pos = remoteAudios.indexOf(audio);
+        await setSelected(remoteAudios.length > pos + 1
+                ? remoteAudios[pos + 1]
+                : remoteAudios[0])
+            .then(
+          (value) async => await onPlayBtn(isLocal: false),
+        );
       }
     });
     super.onInit();
@@ -49,6 +86,16 @@ class PlaylistController extends GetxController with MessagesMixin {
     super.dispose();
   }
 
+  Future<QuerySnapshot<Object?>> getRemoteAudios(String snapshotId) async {
+    QuerySnapshot<Object?> audios = await _homeService.remoteAudios(snapshotId);
+    log(audios.size.toString());
+    remoteAudios.value = audios.docs.map((d) {
+      return AudioModel.fromDocument(d);
+    }).toList();
+
+    return _homeService.remoteAudios(snapshotId);
+  }
+
   Future<void> onPlayBtn({required bool isLocal}) async {
     if (isPlaying.value) {
       await audioPlayer.pause();
@@ -56,7 +103,7 @@ class PlaylistController extends GetxController with MessagesMixin {
     } else {
       try {
         audioPlayer.setUrl(audioPath);
-        await audioPlayer.play(audioPath, isLocal: isLocal);
+        await audioPlayer.play(audioPath, isLocal: isLocal, stayAwake: true);
         isPlaying.value = true;
       } on RangeError catch (e) {
         message(
@@ -72,6 +119,7 @@ class PlaylistController extends GetxController with MessagesMixin {
   }
 
   Future<void> setSelected(AudioModel audio) async {
+    print(remoteAudios);
     await audioPlayer.stop();
     isPlaying.value = false;
 

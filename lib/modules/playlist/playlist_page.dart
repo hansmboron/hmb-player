@@ -109,7 +109,7 @@ class PlaylistPage extends GetView<PlaylistController> {
                 height: _size.height * 0.6,
                 child: isLocal
                     ? GetBuilder<PlaylistController>(
-                        init: PlaylistController(),
+                        // init: PlaylistController(),
                         builder: ((controller) {
                           return ListView.builder(
                             physics: const BouncingScrollPhysics(),
@@ -124,10 +124,7 @@ class PlaylistPage extends GetView<PlaylistController> {
                         }),
                       )
                     : FutureBuilder<QuerySnapshot>(
-                        future: FirebaseFirestore.instance
-                            .collection('playlists/${snapshot.id}/audios')
-                            .orderBy('title')
-                            .get(),
+                        future: controller.getRemoteAudios(snapshot.id),
                         builder: (context, snapshot) {
                           if (!snapshot.hasData) {
                             return const Center(

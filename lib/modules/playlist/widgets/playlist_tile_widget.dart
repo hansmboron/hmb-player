@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/instance_manager.dart';
 import 'package:hmbplayer/modules/playlist/playlist_controller.dart';
 
 import '../../../models/audio_model.dart';
