@@ -12,7 +12,7 @@ class AudioTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(
       () => Positioned(
-        bottom: 115,
+        bottom: 110,
         left: 10,
         width: MediaQuery.of(context).size.width * .95,
         child: Stack(

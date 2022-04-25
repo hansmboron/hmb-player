@@ -22,10 +22,22 @@ class BoxPlayer extends StatelessWidget {
               GestureDetector(
                 onTap: controller.toggleRepeat,
                 child: Icon(
-                  Icons.replay_rounded,
+                  controller.isRepeat.value
+                      ? Icons.repeat_one_rounded
+                      : Icons.repeat_rounded,
                   color: controller.isRepeat.value
                       ? Colors.greenAccent
                       : context.themeOrange,
+                  size: 30,
+                ),
+              ),
+              GestureDetector(
+                onTap: controller.toggleShuffle,
+                child: Icon(
+                  controller.isShuffle.value
+                      ? Icons.shuffle_rounded
+                      : Icons.arrow_right_alt_rounded,
+                  color: context.themeOrange,
                   size: 30,
                 ),
               ),
@@ -62,6 +74,14 @@ class BoxPlayer extends StatelessWidget {
                 ),
               ),
               GestureDetector(
+                onTap: controller.playNext,
+                child: Icon(
+                  Icons.skip_next_rounded,
+                  color: context.themeOrange,
+                  size: 30,
+                ),
+              ),
+              GestureDetector(
                 onTap: controller.toggleMute,
                 child: Icon(
                   controller.isMuted.value
@@ -84,11 +104,14 @@ class BoxPlayer extends StatelessWidget {
                 ),
               ),
               Expanded(
-                child: Slider(
-                  value: controller.position.value.inSeconds.toDouble(),
-                  min: 0.0,
-                  max: controller.duration.value.inSeconds.toDouble(),
-                  onChanged: controller.changeDuration,
+                child: SizedBox(
+                  height: 25,
+                  child: Slider(
+                    value: controller.position.value.inSeconds.toDouble(),
+                    min: 0.0,
+                    max: controller.duration.value.inSeconds.ceilToDouble(),
+                    onChanged: controller.changeDuration,
+                  ),
                 ),
               ),
               Padding(

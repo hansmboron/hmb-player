@@ -22,7 +22,7 @@ class PlaylistTile extends StatelessWidget {
             style: ListTileStyle.drawer,
             tileColor: controller.currentAudio.value.id == audio.id
                 ? Colors.lightGreenAccent.withAlpha(130)
-                : Colors.white24,
+                : Colors.transparent,
             iconColor: Colors.black,
             onTap: () {
               controller.setSelected(audio);

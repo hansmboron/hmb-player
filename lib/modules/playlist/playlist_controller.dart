@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:math' show Random;
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,6 +16,7 @@ class PlaylistController extends GetxController with MessagesMixin {
   final isFaster = false.obs;
   final isSlower = false.obs;
   final isRepeat = false.obs;
+  final isShuffle = false.obs;
   final message = Rxn<MessageModel>();
   Rx<AudioModel> currentAudio = AudioModel().obs;
   RxList<AudioModel> localAudios = RxList();
@@ -42,6 +44,7 @@ class PlaylistController extends GetxController with MessagesMixin {
     });
 
     audioPlayer.onPlayerCompletion.listen((event) async {
+      duration.value = const Duration(seconds: 1);
       position.value = const Duration(seconds: 0);
       if (isRepeat.value) {
         isPlaying.value = true;
@@ -51,31 +54,7 @@ class PlaylistController extends GetxController with MessagesMixin {
       }
 
       // auto play next song
-      if (localAudios.isNotEmpty && localAudios.length > 1 && !isRepeat.value) {
-        AudioModel audio =
-            localAudios.firstWhere((a) => a.id == currentAudio.value.id);
-        var pos = localAudios.indexOf(audio);
-        await setSelected(localAudios.length > pos + 1
-                ? localAudios[pos + 1]
-                : localAudios[0])
-            .then(
-          (value) async => await onPlayBtn(isLocal: true),
-        );
-      }
-
-      if (remoteAudios.isNotEmpty &&
-          remoteAudios.length > 1 &&
-          !isRepeat.value) {
-        AudioModel audio =
-            remoteAudios.firstWhere((a) => a.id == currentAudio.value.id);
-        var pos = remoteAudios.indexOf(audio);
-        await setSelected(remoteAudios.length > pos + 1
-                ? remoteAudios[pos + 1]
-                : remoteAudios[0])
-            .then(
-          (value) async => await onPlayBtn(isLocal: false),
-        );
-      }
+      await playNext();
     });
     super.onInit();
   }
@@ -88,7 +67,7 @@ class PlaylistController extends GetxController with MessagesMixin {
 
   Future<QuerySnapshot<Object?>> getRemoteAudios(String snapshotId) async {
     QuerySnapshot<Object?> audios = await _homeService.remoteAudios(snapshotId);
-    log(audios.size.toString());
+    // log(audios.size.toString());
     remoteAudios.value = audios.docs.map((d) {
       return AudioModel.fromDocument(d);
     }).toList();
@@ -114,6 +93,48 @@ class PlaylistController extends GetxController with MessagesMixin {
           ),
         );
         log(e.toString());
+      }
+    }
+  }
+
+  Future<void> playNext() async {
+    if (localAudios.isNotEmpty && localAudios.length > 1 && !isRepeat.value) {
+      AudioModel audio =
+          localAudios.firstWhere((a) => a.id == currentAudio.value.id);
+      var pos = localAudios.indexOf(audio);
+
+      if (isShuffle.value) {
+        await setSelected(localAudios[Random().nextInt(localAudios.length)])
+            .then(
+          (value) async => await onPlayBtn(isLocal: true),
+        );
+      } else {
+        await setSelected(localAudios.length > pos + 1
+                ? localAudios[pos + 1]
+                : localAudios[0])
+            .then(
+          (value) async => await onPlayBtn(isLocal: true),
+        );
+      }
+    }
+
+    if (remoteAudios.isNotEmpty && remoteAudios.length > 1 && !isRepeat.value) {
+      AudioModel audio =
+          remoteAudios.firstWhere((a) => a.id == currentAudio.value.id);
+      var pos = remoteAudios.indexOf(audio);
+
+      if (isShuffle.value) {
+        await setSelected(remoteAudios[Random().nextInt(remoteAudios.length)])
+            .then(
+          (value) async => await onPlayBtn(isLocal: false),
+        );
+      } else {
+        await setSelected(remoteAudios.length > pos + 1
+                ? remoteAudios[pos + 1]
+                : remoteAudios[0])
+            .then(
+          (value) async => await onPlayBtn(isLocal: false),
+        );
       }
     }
   }
@@ -156,9 +177,9 @@ class PlaylistController extends GetxController with MessagesMixin {
     }
   }
 
-  void changeDuration(double value) {
+  Future<void> changeDuration(double value) async {
     Duration newDuration = Duration(seconds: value.toInt());
-    audioPlayer.seek(newDuration);
+    await audioPlayer.seek(newDuration);
   }
 
   Future<void> toggleMute() async {
@@ -168,6 +189,28 @@ class PlaylistController extends GetxController with MessagesMixin {
     } else {
       await audioPlayer.setVolume(0);
       isMuted.value = true;
+      message(
+        MessageModel(
+          title: 'Mudo!',
+          message: 'O som foi mutado!',
+          type: MessageType.error,
+        ),
+      );
+    }
+  }
+
+  void toggleShuffle() {
+    if (isShuffle.value) {
+      isShuffle.value = false;
+    } else {
+      isShuffle.value = true;
+      message(
+        MessageModel(
+          title: 'Modo Aleatório Ativado!',
+          message: 'Modo Aleatório Ativado!',
+          type: MessageType.info,
+        ),
+      );
     }
   }
 
@@ -202,6 +245,13 @@ class PlaylistController extends GetxController with MessagesMixin {
     } else {
       await audioPlayer.setReleaseMode(ReleaseMode.LOOP);
       isRepeat.value = true;
+      message(
+        MessageModel(
+          title: 'Repetir Ativado!',
+          message: 'Repetir o mesmo audio Ativado!',
+          type: MessageType.info,
+        ),
+      );
     }
   }
 }

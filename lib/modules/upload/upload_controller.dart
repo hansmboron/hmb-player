@@ -34,6 +34,13 @@ class UploadController extends GetxController with LoaderMixin, MessagesMixin {
     super.onInit();
   }
 
+  @override
+  void onClose() {
+    nameEC.dispose();
+    authorEC.dispose();
+    super.onClose();
+  }
+
   Future<void> pickAudio() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowMultiple: true,

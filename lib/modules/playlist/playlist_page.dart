@@ -83,7 +83,7 @@ class PlaylistPage extends GetView<PlaylistController> {
                           borderRadius: BorderRadius.all(Radius.circular(5)),
                         ),
                         width: _size.width * .95,
-                        height: 100,
+                        height: 90,
                         child: controller.currentAudio.value.id != null
                             ? BoxPlayer(isLocal: isLocal)
                             : const Center(
@@ -101,9 +101,22 @@ class PlaylistPage extends GetView<PlaylistController> {
                 ],
               ),
               const SizedBox(height: 8),
-              Text(
-                "Playlist ${isLocal ? 'Local' : snapshot.get('title')}:",
-                style: const TextStyle(fontStyle: FontStyle.italic),
+              Visibility(
+                visible: isLocal,
+                child: Obx(
+                  () => Text(
+                    "Playlist Local (${controller.localAudios.length} audio(s)):",
+                    style: const TextStyle(fontStyle: FontStyle.italic),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                replacement: Obx(
+                  () => Text(
+                    "Playlist ${snapshot.get('title')} (${controller.remoteAudios.length} audio(s)):",
+                    style: const TextStyle(fontStyle: FontStyle.italic),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ),
               SizedBox(
                 height: _size.height * 0.6,
@@ -135,15 +148,21 @@ class PlaylistPage extends GetView<PlaylistController> {
                             );
                           } else if (snapshot.hasError) {
                             return const Center(
-                              child: Text('Erro ao carregar audios!',
-                                  style: TextStyle(
-                                      color: Colors.red, fontSize: 30)),
+                              child: Text(
+                                'Erro ao carregar audios!',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 30),
+                                textAlign: TextAlign.center,
+                              ),
                             );
                           } else if (snapshot.data!.size <= 0) {
                             return const Center(
-                              child: Text('Erro ao carregar audios!',
-                                  style: TextStyle(
-                                      color: Colors.red, fontSize: 30)),
+                              child: Text(
+                                'Nenhum audio encontrado!',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 30),
+                                textAlign: TextAlign.center,
+                              ),
                             );
                           } else {
                             return ListView(
