@@ -42,16 +42,16 @@ class MyDrawer extends StatelessWidget {
                 Get.toNamed('/home/local');
               },
             ),
-            const Divider(height: 0),
-            ListTile(
-              leading: const Icon(Icons.settings_rounded),
-              title: const Text("Configurações"),
-              trailing: const Icon(Icons.arrow_forward_ios_rounded),
-              onTap: () {
-                Get.back();
-                Get.toNamed('/settings');
-              },
-            ),
+            // const Divider(height: 0),
+            // ListTile(
+            //   leading: const Icon(Icons.settings_rounded),
+            //   title: const Text("Configurações"),
+            //   trailing: const Icon(Icons.arrow_forward_ios_rounded),
+            //   onTap: () {
+            //     Get.back();
+            //     Get.toNamed('/settings');
+            //   },
+            // ),
             if (controller.isAdmin())
               Column(
                 children: [
@@ -95,7 +95,7 @@ class MyDrawer extends StatelessWidget {
                   ),
                   applicationName: 'HMB Player',
                   applicationVersion: "1.0.0",
-                  applicationLegalese: "Developed by Hans M. Boron - 2022",
+                  applicationLegalese: "Desenvolvido por Hans M. Boron - 2022",
                 );
               },
             ),

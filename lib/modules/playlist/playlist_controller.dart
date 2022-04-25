@@ -146,10 +146,12 @@ class PlaylistController extends GetxController with MessagesMixin {
       }
       update();
     } else {
-      MessageModel(
-        title: 'Erro!',
-        message: 'Nenhua arquivo selecionado!',
-        type: MessageType.error,
+      message(
+        MessageModel(
+          title: 'Erro!',
+          message: 'Nenhum arquivo selecionado!',
+          type: MessageType.error,
+        ),
       );
     }
   }

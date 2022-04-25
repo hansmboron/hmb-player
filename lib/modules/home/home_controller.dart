@@ -30,7 +30,7 @@ class HomeController extends GetxController {
       case 'Configurações':
         Get.toNamed('/settings');
         break;
-      case 'Abrir Local':
+      case 'Abrir Audio':
         Get.toNamed('/home/local');
         break;
       case 'Sair':

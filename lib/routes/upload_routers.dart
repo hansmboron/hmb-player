@@ -8,7 +8,7 @@ class UploadRouters {
     GetPage(
       name: '/upload',
       binding: UploadBindings(),
-      page: () => const UploadPage(),
+      page: () => UploadPage(),
     ),
   ];
 }
