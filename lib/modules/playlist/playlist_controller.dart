@@ -43,6 +43,16 @@ class PlaylistController extends GetxController with MessagesMixin {
       position.value = p;
     });
 
+    audioPlayer.onPlayerError.listen((event) {
+      message(
+        MessageModel(
+          title: 'Erro!',
+          message: 'Erro ao reproduzir audio!',
+          type: MessageType.error,
+        ),
+      );
+    });
+
     audioPlayer.onPlayerCompletion.listen((event) async {
       duration.value = const Duration(seconds: 1);
       position.value = const Duration(seconds: 0);
@@ -84,35 +94,31 @@ class PlaylistController extends GetxController with MessagesMixin {
   }
 
   Future<void> removeFromMyPlaylist({required AudioModel audio}) async {
-    print(remoteAudios.value);
     await _homeService
         .removeFromMyPlaylist(
-          audio: audio,
-          onFail: () {
-            message(
-              MessageModel(
-                title: 'Erro!',
-                message: 'Erro ao remover ${audio.title} da minha playlist!',
-                type: MessageType.error,
-              ),
-            );
-          },
-          onSuccess: () {
-            message(
-              MessageModel(
-                title: 'Sucesso!',
-                message: '${audio.title} REMOVIDO da minha playlist!',
-                type: MessageType.info,
-              ),
-            );
-          },
-        )
-        .then(
-          (value) => remoteAudios.removeWhere((a) => a.id == audio.id),
-        )
+      audio: audio,
+      onFail: () {
+        message(
+          MessageModel(
+            title: 'Erro!',
+            message: 'Erro ao remover ${audio.title} da minha playlist!',
+            type: MessageType.error,
+          ),
+        );
+      },
+      onSuccess: () {
+        message(
+          MessageModel(
+            title: 'Sucesso!',
+            message: '${audio.title} REMOVIDO da minha playlist!',
+            type: MessageType.info,
+          ),
+        );
+      },
+    )
         .then(
       (value) {
-        print(remoteAudios.value);
+        remoteAudios.removeWhere((a) => a.id == audio.id);
         update();
       },
     );
@@ -149,8 +155,20 @@ class PlaylistController extends GetxController with MessagesMixin {
     } else {
       try {
         audioPlayer.setUrl(audioPath);
-        await audioPlayer.play(audioPath, isLocal: isLocal, stayAwake: true);
-        isPlaying.value = true;
+        int result = await audioPlayer.play(audioPath,
+            isLocal: isLocal, stayAwake: true);
+        if (result == 1) {
+          isPlaying.value = true;
+        } else {
+          isPlaying.value = false;
+          message(
+            MessageModel(
+              title: 'Erro!',
+              message: 'Falha ao reproduzir audio',
+              type: MessageType.error,
+            ),
+          );
+        }
       } on RangeError catch (e) {
         message(
           MessageModel(
@@ -186,9 +204,14 @@ class PlaylistController extends GetxController with MessagesMixin {
     }
 
     if (remoteAudios.isNotEmpty && remoteAudios.length > 1 && !isRepeat.value) {
-      AudioModel audio =
-          remoteAudios.firstWhere((a) => a.id == currentAudio.value.id);
-      var pos = remoteAudios.indexOf(audio);
+      int pos = 0;
+      try {
+        AudioModel audio =
+            remoteAudios.firstWhere((a) => a.id == currentAudio.value.id);
+        pos = remoteAudios.indexOf(audio);
+      } catch (e) {
+        log(e.toString());
+      }
 
       if (isShuffle.value) {
         await setSelected(remoteAudios[Random().nextInt(remoteAudios.length)])

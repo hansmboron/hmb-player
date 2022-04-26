@@ -9,8 +9,6 @@ import 'package:hmbplayer/models/user_model.dart';
 import 'login_repository.dart';
 
 class LoginRepositoryImpl implements LoginRepository {
-  UserModel? _user;
-
   @override
   Future<User?> login() async {
     final googleUser = await GoogleSignIn().signIn();
@@ -42,7 +40,6 @@ class LoginRepositoryImpl implements LoginRepository {
             .collection('users')
             .doc(userModel.uid)
             .set(userModel.toMap());
-        _user = userModel;
       }
       return fuser;
     }

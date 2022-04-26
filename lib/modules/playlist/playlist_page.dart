@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:hmbplayer/core/ui/theme_extensions.dart';
@@ -12,7 +15,7 @@ import 'widgets/playlist_tile_widget.dart';
 class PlaylistPage extends GetView<PlaylistController> {
   final bool isLocal;
   final bool isUserPlay;
-  final DocumentSnapshot snapshot = Get.arguments;
+  final DocumentSnapshot? snapshot = Get.arguments;
 
   PlaylistPage({Key? key, this.isLocal = false, this.isUserPlay = false})
       : super(key: key);
@@ -24,6 +27,9 @@ class PlaylistPage extends GetView<PlaylistController> {
 
     return WillPopScope(
       onWillPop: () async {
+        // delete local files from cache when close and stop music
+        String appDir = (await getTemporaryDirectory()).path;
+        Directory(appDir).delete(recursive: true);
         return await controller.audioPlayer.stop().then((value) => true);
       },
       child: Scaffold(
@@ -36,7 +42,7 @@ class PlaylistPage extends GetView<PlaylistController> {
                 alignment: AlignmentDirectional.topCenter,
                 children: [
                   Hero(
-                    tag: isLocal || isUserPlay ? 0 : snapshot.id,
+                    tag: isLocal || isUserPlay ? 0 : snapshot?.id ?? 0,
                     child: SizedBox(
                       width: double.maxFinite,
                       height: _size.height * (_orientation == 0 ? 0.4 : 0.6),
@@ -48,7 +54,7 @@ class PlaylistPage extends GetView<PlaylistController> {
                               fit: BoxFit.cover,
                             )
                           : CachedNetworkImage(
-                              imageUrl: snapshot.get('icon'),
+                              imageUrl: snapshot?.get('icon') ?? '',
                               fit: BoxFit.cover,
                             ),
                     ),
@@ -68,9 +74,10 @@ class PlaylistPage extends GetView<PlaylistController> {
                               ? "Arquivos Local"
                               : isUserPlay
                                   ? 'Minha Playlist'
-                                  : snapshot.get(
-                                      'title',
-                                    ),
+                                  : snapshot?.get(
+                                        'title',
+                                      ) ??
+                                      '',
                           style: TextStyle(
                             color: context.themeOrange,
                             fontSize: 26,
@@ -145,7 +152,8 @@ class PlaylistPage extends GetView<PlaylistController> {
                         : FutureBuilder<QuerySnapshot>(
                             future: isUserPlay
                                 ? controller.getUserPlaylist()
-                                : controller.getRemoteAudios(snapshot.id),
+                                : controller
+                                    .getRemoteAudios(snapshot?.id ?? ''),
                             builder: (context, snapshot) {
                               if (!snapshot.hasData) {
                                 return const Center(

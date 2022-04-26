@@ -81,16 +81,6 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   @override
-  Future<void> removeAudio(
-      {required AudioModel audioModel,
-      required String userUid,
-      required Function onFail,
-      required Function onSuccess}) {
-    // TODO: implement removeAudio
-    throw UnimplementedError();
-  }
-
-  @override
   Future<void> addToMyPlaylist(
       {required AudioModel audio,
       required Function onFail,

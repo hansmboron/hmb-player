@@ -36,7 +36,7 @@ class AudioTitle extends StatelessWidget {
             Center(
               child: Text(
                 controller.currentAudio.value.id != null
-                    ? controller.currentAudio.value.title!
+                    ? controller.currentAudio.value.title ?? ''
                     : '',
                 textAlign: TextAlign.center,
                 style: const TextStyle(

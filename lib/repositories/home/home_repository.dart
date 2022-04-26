@@ -20,13 +20,6 @@ abstract class HomeRepository {
     required Function onSuccess,
   });
 
-  Future<void> removeAudio({
-    required AudioModel audioModel,
-    required String userUid,
-    required Function onFail,
-    required Function onSuccess,
-  });
-
   Future<void> addToMyPlaylist({
     required AudioModel audio,
     required Function onFail,
