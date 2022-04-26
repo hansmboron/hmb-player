@@ -44,6 +44,7 @@ flutter:
     - assets/images/logo.png
     - assets/images/google.png
     - assets/images/bg.jpg
+    - assets/images/my_playlist.jpg
     - assets/audio/test.mp3
 
 flutter_native_splash:

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hmbplayer/modules/playlist/playlist_controller.dart';
@@ -10,11 +8,13 @@ class PlaylistTile extends StatelessWidget {
   final PlaylistController controller = Get.find();
   final AudioModel audio;
   final bool isLocal;
+  final bool isUserPlay;
 
   PlaylistTile({
     Key? key,
     required this.audio,
     required this.isLocal,
+    required this.isUserPlay,
   }) : super(key: key);
 
   @override
@@ -45,24 +45,33 @@ class PlaylistTile extends StatelessWidget {
                     width: 35,
                     child: Center(
                       child: IconButton(
-                        tooltip: "Adicionar ${audio.title} à minha playlist!",
+                        tooltip: isUserPlay
+                            ? "Remover ${audio.title} da minha playlist!"
+                            : "Adicionar ${audio.title} à minha playlist!",
                         color: Colors.black,
                         splashColor: Colors.green,
                         highlightColor: Colors.green,
                         onPressed: () {
                           Get.defaultDialog(
-                            title: "Confirmar?",
-                            content: Text(
-                                'Adicionar o audio ${audio.title} na minha playlist?'),
+                            title: isUserPlay ? "Remover?" : "Adicionar?",
+                            content: Text(isUserPlay
+                                ? 'Remover o audio ${audio.title} da minha playlist?'
+                                : 'Adicionar o audio ${audio.title} na minha playlist?'),
                             textConfirm: 'Confirmar',
                             confirmTextColor: Colors.white,
                             onConfirm: () {
                               Get.back();
-                              controller.addToMyPlaylist(audio: audio);
+                              if (isUserPlay) {
+                                controller.removeFromMyPlaylist(audio: audio);
+                              } else {
+                                controller.addToMyPlaylist(audio: audio);
+                              }
                             },
                           );
                         },
-                        icon: const Icon(Icons.playlist_add_rounded),
+                        icon: Icon(isUserPlay
+                            ? Icons.playlist_remove_rounded
+                            : Icons.playlist_add_rounded),
                       ),
                     ),
                   ),

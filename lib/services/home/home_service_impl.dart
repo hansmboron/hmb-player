@@ -22,6 +22,10 @@ class HomeServiceImpl implements HomeService {
   Future<List<PlaylistModel?>> getPlaylists() => _homeRepository.getPlaylists();
 
   @override
+  Future<QuerySnapshot<Object?>> getUserPlaylist() =>
+      _homeRepository.getUserPlaylist();
+
+  @override
   Future<void> addAudio({
     required AudioModel audioModel,
     required File file,
@@ -47,5 +51,17 @@ class HomeServiceImpl implements HomeService {
         audio: audio,
         onFail: onFail,
         onSuccess: onSuccess,
+      );
+
+  @override
+  Future<void> removeFromMyPlaylist({
+    required AudioModel audio,
+    required Function onFail,
+    required Function onSuccess,
+  }) =>
+      _homeRepository.removeFromMyPlaylist(
+        audio: audio,
+        onSuccess: onSuccess,
+        onFail: onFail,
       );
 }

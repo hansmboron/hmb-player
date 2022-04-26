@@ -11,9 +11,11 @@ import 'widgets/playlist_tile_widget.dart';
 
 class PlaylistPage extends GetView<PlaylistController> {
   final bool isLocal;
+  final bool isUserPlay;
   final DocumentSnapshot snapshot = Get.arguments;
 
-  PlaylistPage({Key? key, this.isLocal = false}) : super(key: key);
+  PlaylistPage({Key? key, this.isLocal = false, this.isUserPlay = false})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -34,13 +36,15 @@ class PlaylistPage extends GetView<PlaylistController> {
                 alignment: AlignmentDirectional.topCenter,
                 children: [
                   Hero(
-                    tag: isLocal ? 0 : snapshot.id,
+                    tag: isLocal || isUserPlay ? 0 : snapshot.id,
                     child: SizedBox(
                       width: double.maxFinite,
                       height: _size.height * (_orientation == 0 ? 0.4 : 0.6),
-                      child: isLocal
+                      child: isLocal || isUserPlay
                           ? Image.asset(
-                              'assets/images/bg.jpg',
+                              isUserPlay
+                                  ? 'assets/images/my_playlist.jpg'
+                                  : 'assets/images/bg.jpg',
                               fit: BoxFit.cover,
                             )
                           : CachedNetworkImage(
@@ -62,9 +66,11 @@ class PlaylistPage extends GetView<PlaylistController> {
                         child: Text(
                           isLocal
                               ? "Arquivos Local"
-                              : snapshot.get(
-                                  'title',
-                                ),
+                              : isUserPlay
+                                  ? 'Minha Playlist'
+                                  : snapshot.get(
+                                      'title',
+                                    ),
                           style: TextStyle(
                             color: context.themeOrange,
                             fontSize: 26,
@@ -113,7 +119,7 @@ class PlaylistPage extends GetView<PlaylistController> {
                 ),
                 replacement: Obx(
                   () => Text(
-                    "Playlist ${snapshot.get('title')} (${controller.remoteAudios.length} audio(s)):",
+                    "Playlist (${controller.remoteAudios.length} audio(s)):",
                     style: const TextStyle(fontStyle: FontStyle.italic),
                     textAlign: TextAlign.center,
                   ),
@@ -121,11 +127,10 @@ class PlaylistPage extends GetView<PlaylistController> {
               ),
               SizedBox(
                 height: _size.height * 0.6,
-                child: isLocal
-                    ? GetBuilder<PlaylistController>(
-                        // init: PlaylistController(),
-                        builder: ((controller) {
-                          return ListView.builder(
+                child: GetBuilder<PlaylistController>(
+                  builder: ((controller) {
+                    return isLocal
+                        ? ListView.builder(
                             physics: const BouncingScrollPhysics(),
                             padding: const EdgeInsets.all(10),
                             itemCount: controller.localAudios.length,
@@ -133,54 +138,59 @@ class PlaylistPage extends GetView<PlaylistController> {
                               return PlaylistTile(
                                 audio: controller.localAudios[index],
                                 isLocal: isLocal,
+                                isUserPlay: isUserPlay,
                               );
                             },
-                          );
-                        }),
-                      )
-                    : FutureBuilder<QuerySnapshot>(
-                        future: controller.getRemoteAudios(snapshot.id),
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData) {
-                            return const Center(
-                              child: CircularProgressIndicator(
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
-                            );
-                          } else if (snapshot.hasError) {
-                            return const Center(
-                              child: Text(
-                                'Erro ao carregar audios!',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 30),
-                                textAlign: TextAlign.center,
-                              ),
-                            );
-                          } else if (snapshot.data!.size <= 0) {
-                            return const Center(
-                              child: Text(
-                                'Nenhum audio encontrado!',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 30),
-                                textAlign: TextAlign.center,
-                              ),
-                            );
-                          } else {
-                            return ListView(
-                              physics: const BouncingScrollPhysics(),
-                              padding: const EdgeInsets.all(10),
-                              children: snapshot.data!.docs.map((d) {
-                                AudioModel audio = AudioModel.fromDocument(d);
-                                return PlaylistTile(
-                                  audio: audio,
-                                  isLocal: isLocal,
+                          )
+                        : FutureBuilder<QuerySnapshot>(
+                            future: isUserPlay
+                                ? controller.getUserPlaylist()
+                                : controller.getRemoteAudios(snapshot.id),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return const Center(
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white),
+                                  ),
                                 );
-                              }).toList(),
-                            );
-                          }
-                        },
-                      ),
+                              } else if (snapshot.hasError) {
+                                return const Center(
+                                  child: Text(
+                                    'Erro ao carregar audios!',
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 30),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                );
+                              } else if (snapshot.data!.size <= 0) {
+                                return const Center(
+                                  child: Text(
+                                    'Nenhum audio encontrado!',
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 30),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                );
+                              } else {
+                                return ListView(
+                                  physics: const BouncingScrollPhysics(),
+                                  padding: const EdgeInsets.all(10),
+                                  children: snapshot.data!.docs.map((d) {
+                                    AudioModel audio =
+                                        AudioModel.fromDocument(d);
+                                    return PlaylistTile(
+                                      audio: audio,
+                                      isLocal: isLocal,
+                                      isUserPlay: isUserPlay,
+                                    );
+                                  }).toList(),
+                                );
+                              }
+                            },
+                          );
+                  }),
+                ),
               ),
             ],
           ),

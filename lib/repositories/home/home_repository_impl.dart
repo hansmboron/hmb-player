@@ -15,10 +15,20 @@ class HomeRepositoryImpl implements HomeRepository {
   final FirebaseStorage storage = FirebaseStorage.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final GetStorage box = GetStorage();
+
   @override
   Future<QuerySnapshot<Object?>> remoteAudios(String snapshotId) {
     return FirebaseFirestore.instance
         .collection('playlists/$snapshotId/audios')
+        .orderBy('title')
+        .get();
+  }
+
+  @override
+  Future<QuerySnapshot<Object?>> getUserPlaylist() {
+    UserModel user = UserModel.fromMap(box.read('user'));
+    return FirebaseFirestore.instance
+        .collection('users/${user.uid}/my_playlist')
         .orderBy('title')
         .get();
   }
@@ -96,7 +106,27 @@ class HomeRepositoryImpl implements HomeRepository {
           );
     } catch (e) {
       onFail();
-      log("Falha ao adicionar audio na minha playlist ${e.toString()}");
+      log("Falha ao adicionar audio na minha playlist: ${e.toString()}");
+    }
+  }
+
+  @override
+  Future<void> removeFromMyPlaylist(
+      {required AudioModel audio,
+      required Function onSuccess,
+      required Function onFail}) async {
+    try {
+      UserModel user = UserModel.fromMap(box.read('user'));
+      await firestore
+          .collection('users/${user.uid}/my_playlist')
+          .doc(audio.id)
+          .delete()
+          .then(
+            (value) => onSuccess(),
+          );
+    } catch (e) {
+      onFail();
+      log("Falha ao deletar audio da minha playlist: ${e.toString()}");
     }
   }
 }

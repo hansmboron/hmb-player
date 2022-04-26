@@ -26,7 +26,7 @@ class HomeRouters {
     GetPage(
       name: '/home/myplaylist',
       binding: PlaylistBindings(),
-      page: () => PlaylistPage(),
+      page: () => PlaylistPage(isUserPlay: true),
     ),
   ];
 }

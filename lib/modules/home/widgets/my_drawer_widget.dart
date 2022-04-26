@@ -50,10 +50,8 @@ class MyDrawer extends StatelessWidget {
               title: const Text("Minha Playlist"),
               trailing: const Icon(Icons.arrow_forward_ios_rounded),
               onTap: () async {
-                var snapsho = await controller.getUserAudios(_user.uid ?? '');
-                var snapshot = snapsho.docs.first;
-                log(snapshot.id);
-                Get.toNamed('/home/myplaylist', arguments: snapshot);
+                Get.back();
+                Get.toNamed('/home/myplaylist');
               },
             ),
             // const Divider(height: 0),

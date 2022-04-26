@@ -67,12 +67,55 @@ class PlaylistController extends GetxController with MessagesMixin {
 
   Future<QuerySnapshot<Object?>> getRemoteAudios(String snapshotId) async {
     QuerySnapshot<Object?> audios = await _homeService.remoteAudios(snapshotId);
-    // log(audios.size.toString());
     remoteAudios.value = audios.docs.map((d) {
       return AudioModel.fromDocument(d);
     }).toList();
 
     return _homeService.remoteAudios(snapshotId);
+  }
+
+  Future<QuerySnapshot<Object?>> getUserPlaylist() async {
+    QuerySnapshot<Object?> audios = await _homeService.getUserPlaylist();
+    remoteAudios.value = audios.docs.map((d) {
+      return AudioModel.fromDocument(d);
+    }).toList();
+
+    return _homeService.getUserPlaylist();
+  }
+
+  Future<void> removeFromMyPlaylist({required AudioModel audio}) async {
+    print(remoteAudios.value);
+    await _homeService
+        .removeFromMyPlaylist(
+          audio: audio,
+          onFail: () {
+            message(
+              MessageModel(
+                title: 'Erro!',
+                message: 'Erro ao remover ${audio.title} da minha playlist!',
+                type: MessageType.error,
+              ),
+            );
+          },
+          onSuccess: () {
+            message(
+              MessageModel(
+                title: 'Sucesso!',
+                message: '${audio.title} REMOVIDO da minha playlist!',
+                type: MessageType.info,
+              ),
+            );
+          },
+        )
+        .then(
+          (value) => remoteAudios.removeWhere((a) => a.id == audio.id),
+        )
+        .then(
+      (value) {
+        print(remoteAudios.value);
+        update();
+      },
+    );
   }
 
   Future<void> addToMyPlaylist({required AudioModel audio}) async {

@@ -16,9 +16,4 @@ class LoginServiceImpl implements LoginService {
 
   @override
   Future<void> logout() => _loginRepository.logout();
-
-  @override
-  Future<QuerySnapshot<Object?>> getUsersAudios(String uid) {
-    return _loginRepository.getUsersAudios(uid);
-  }
 }
