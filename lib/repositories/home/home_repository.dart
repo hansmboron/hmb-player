@@ -7,11 +7,26 @@ import '../../models/playlist_model.dart';
 
 abstract class HomeRepository {
   Future<QuerySnapshot<Object?>> remoteAudios(String snapshotId);
+
   Future<List<PlaylistModel?>> getPlaylists();
+
   Future<void> addAudio({
     required AudioModel audioModel,
     required File file,
     required String playlistName,
+    required Function onFail,
+    required Function onSuccess,
+  });
+
+  Future<void> removeAudio({
+    required AudioModel audioModel,
+    required String userUid,
+    required Function onFail,
+    required Function onSuccess,
+  });
+
+  Future<void> addToMyPlaylist({
+    required AudioModel audio,
     required Function onFail,
     required Function onSuccess,
   });

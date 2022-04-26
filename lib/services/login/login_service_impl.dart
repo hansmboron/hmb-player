@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../repositories/login/login_repository.dart';
@@ -15,4 +16,9 @@ class LoginServiceImpl implements LoginService {
 
   @override
   Future<void> logout() => _loginRepository.logout();
+
+  @override
+  Future<QuerySnapshot<Object?>> getUsersAudios(String uid) {
+    return _loginRepository.getUsersAudios(uid);
+  }
 }

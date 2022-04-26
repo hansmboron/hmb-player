@@ -35,9 +35,12 @@ class PlaylistTile extends StatelessWidget {
           style: TextStyle(
             color: context.themeOrange,
             fontWeight: FontWeight.bold,
-            fontSize: 18,
+            fontSize: 20,
           ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
+        subtitle: Text(snapshot.get('type') == 0 ? 'Músicas' : 'Audiobook'),
         trailing: const Icon(
           Icons.keyboard_arrow_right_rounded,
           size: 36,

@@ -75,6 +75,30 @@ class PlaylistController extends GetxController with MessagesMixin {
     return _homeService.remoteAudios(snapshotId);
   }
 
+  Future<void> addToMyPlaylist({required AudioModel audio}) async {
+    await _homeService.addToMyPlaylist(
+      audio: audio,
+      onFail: () {
+        message(
+          MessageModel(
+            title: 'Erro!',
+            message: 'Erro ao adicionar ${audio.title} à minha playlist!',
+            type: MessageType.error,
+          ),
+        );
+      },
+      onSuccess: () {
+        message(
+          MessageModel(
+            title: 'Sucesso!',
+            message: '${audio.title} ADICIONADO à minha playlist!',
+            type: MessageType.info,
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> onPlayBtn({required bool isLocal}) async {
     if (isPlaying.value) {
       await audioPlayer.pause();

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -12,6 +13,7 @@ class HomeController extends GetxController {
   final LoginService _loginService;
   final FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.instance;
   final GetStorage storage = GetStorage();
+  RxList userAudios = RxList();
 
   HomeController({required LoginService loginService})
       : _loginService = loginService;
@@ -37,6 +39,16 @@ class HomeController extends GetxController {
         logout();
         break;
     }
+  }
+
+  Future<QuerySnapshot<Object?>> getUserAudios(String uid) async {
+    // QuerySnapshot<Object?> audios = await _loginService.getUsersAudios(uid);
+    // // log(audios.size.toString());
+    // userAudios.value = audios.docs.map((d) {
+    //   return AudioModel.fromDocument(d);
+    // }).toList();
+
+    return await _loginService.getUsersAudios(uid);
   }
 
   Future<void> logout() async {

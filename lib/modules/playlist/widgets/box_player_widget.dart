@@ -11,15 +11,15 @@ class BoxPlayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              GestureDetector(
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Obx(
+              () => GestureDetector(
                 onTap: controller.toggleRepeat,
                 child: Icon(
                   controller.isRepeat.value
@@ -31,7 +31,9 @@ class BoxPlayer extends StatelessWidget {
                   size: 30,
                 ),
               ),
-              GestureDetector(
+            ),
+            Obx(
+              () => GestureDetector(
                 onTap: controller.toggleShuffle,
                 child: Icon(
                   controller.isShuffle.value
@@ -41,7 +43,9 @@ class BoxPlayer extends StatelessWidget {
                   size: 30,
                 ),
               ),
-              GestureDetector(
+            ),
+            Obx(
+              () => GestureDetector(
                 onTap: controller.slower,
                 child: Icon(
                   Icons.fast_rewind_rounded,
@@ -51,7 +55,9 @@ class BoxPlayer extends StatelessWidget {
                   size: 30,
                 ),
               ),
-              GestureDetector(
+            ),
+            Obx(
+              () => GestureDetector(
                 onTap: () {
                   controller.onPlayBtn(isLocal: isLocal);
                 },
@@ -63,7 +69,9 @@ class BoxPlayer extends StatelessWidget {
                   size: 50,
                 ),
               ),
-              GestureDetector(
+            ),
+            Obx(
+              () => GestureDetector(
                 onTap: controller.faster,
                 child: Icon(
                   Icons.fast_forward_rounded,
@@ -73,15 +81,17 @@ class BoxPlayer extends StatelessWidget {
                   size: 30,
                 ),
               ),
-              GestureDetector(
-                onTap: controller.playNext,
-                child: Icon(
-                  Icons.skip_next_rounded,
-                  color: context.themeOrange,
-                  size: 30,
-                ),
+            ),
+            GestureDetector(
+              onTap: controller.playNext,
+              child: Icon(
+                Icons.skip_next_rounded,
+                color: context.themeOrange,
+                size: 30,
               ),
-              GestureDetector(
+            ),
+            Obx(
+              () => GestureDetector(
                 onTap: controller.toggleMute,
                 child: Icon(
                   controller.isMuted.value
@@ -91,40 +101,44 @@ class BoxPlayer extends StatelessWidget {
                   size: 30,
                 ),
               ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 12),
-                child: Text(
+            ),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 12),
+              child: Obx(
+                () => Text(
                   controller.position.toString().split('.')[0],
                   style: const TextStyle(color: Colors.white, fontSize: 12),
                 ),
               ),
-              Expanded(
-                child: SizedBox(
-                  height: 25,
-                  child: Slider(
-                    value: controller.position.value.inSeconds.toDouble(),
-                    min: 0.0,
-                    max: controller.duration.value.inSeconds.ceilToDouble(),
-                    onChanged: controller.changeDuration,
-                  ),
+            ),
+            SizedBox(
+              height: 25,
+              child: Obx(
+                () => Slider(
+                  value: controller.position.value.inSeconds.toDouble(),
+                  min: 0.0,
+                  max: controller.duration.value.inSeconds.ceilToDouble(),
+                  onChanged: controller.changeDuration,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(right: 12),
-                child: Text(
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: Obx(
+                () => Text(
                   controller.duration.toString().split('.')[0],
                   style: const TextStyle(color: Colors.white, fontSize: 12),
                 ),
               ),
-            ],
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

@@ -36,4 +36,16 @@ class HomeServiceImpl implements HomeService {
         onFail: onFail,
         onSuccess: onSuccess,
       );
+
+  @override
+  Future<void> addToMyPlaylist({
+    required AudioModel audio,
+    required Function onFail,
+    required Function onSuccess,
+  }) =>
+      _homeRepository.addToMyPlaylist(
+        audio: audio,
+        onFail: onFail,
+        onSuccess: onSuccess,
+      );
 }

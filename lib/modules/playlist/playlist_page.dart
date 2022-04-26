@@ -11,8 +11,9 @@ import 'widgets/playlist_tile_widget.dart';
 
 class PlaylistPage extends GetView<PlaylistController> {
   final bool isLocal;
-  PlaylistPage({Key? key, this.isLocal = false}) : super(key: key);
   final DocumentSnapshot snapshot = Get.arguments;
+
+  PlaylistPage({Key? key, this.isLocal = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -131,6 +132,7 @@ class PlaylistPage extends GetView<PlaylistController> {
                             itemBuilder: (context, index) {
                               return PlaylistTile(
                                 audio: controller.localAudios[index],
+                                isLocal: isLocal,
                               );
                             },
                           );
@@ -170,7 +172,10 @@ class PlaylistPage extends GetView<PlaylistController> {
                               padding: const EdgeInsets.all(10),
                               children: snapshot.data!.docs.map((d) {
                                 AudioModel audio = AudioModel.fromDocument(d);
-                                return PlaylistTile(audio: audio);
+                                return PlaylistTile(
+                                  audio: audio,
+                                  isLocal: isLocal,
+                                );
                               }).toList(),
                             );
                           }

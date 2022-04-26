@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -40,6 +42,18 @@ class MyDrawer extends StatelessWidget {
               onTap: () {
                 Get.back();
                 Get.toNamed('/home/local');
+              },
+            ),
+            const Divider(height: 0),
+            ListTile(
+              leading: const Icon(Icons.playlist_play_rounded),
+              title: const Text("Minha Playlist"),
+              trailing: const Icon(Icons.arrow_forward_ios_rounded),
+              onTap: () async {
+                var snapsho = await controller.getUserAudios(_user.uid ?? '');
+                var snapshot = snapsho.docs.first;
+                log(snapshot.id);
+                Get.toNamed('/home/myplaylist', arguments: snapshot);
               },
             ),
             // const Divider(height: 0),

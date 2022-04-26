@@ -16,4 +16,10 @@ abstract class HomeService {
     required Function onFail,
     required Function onSuccess,
   });
+
+  Future<void> addToMyPlaylist({
+    required AudioModel audio,
+    required Function onFail,
+    required Function onSuccess,
+  });
 }

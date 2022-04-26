@@ -54,7 +54,10 @@ class HomePage extends GetView<HomeController> {
           horizontal: _size.width * 0.04,
         ),
         child: FutureBuilder<QuerySnapshot>(
-          future: FirebaseFirestore.instance.collection('playlists').get(),
+          future: FirebaseFirestore.instance
+              .collection('playlists')
+              .orderBy('type')
+              .get(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return const Center(
