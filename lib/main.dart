@@ -31,6 +31,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: context.themeOrange,
+        fontFamily: "Nunito",
       ),
       getPages: [
         ...AuthRouters.routers,

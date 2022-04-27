@@ -132,72 +132,88 @@ class PlaylistPage extends GetView<PlaylistController> {
                   ),
                 ),
               ),
+              const SizedBox(height: 4),
               SizedBox(
                 height: _size.height * 0.6,
-                child: GetBuilder<PlaylistController>(
-                  builder: ((controller) {
-                    return isLocal
-                        ? ListView.builder(
-                            physics: const BouncingScrollPhysics(),
-                            padding: const EdgeInsets.all(10),
-                            itemCount: controller.localAudios.length,
-                            itemBuilder: (context, index) {
-                              return PlaylistTile(
-                                audio: controller.localAudios[index],
-                                isLocal: isLocal,
-                                isUserPlay: isUserPlay,
-                              );
-                            },
-                          )
-                        : FutureBuilder<QuerySnapshot>(
-                            future: isUserPlay
-                                ? controller.getUserPlaylist()
-                                : controller
-                                    .getRemoteAudios(snapshot?.id ?? ''),
-                            builder: (context, snapshot) {
-                              if (!snapshot.hasData) {
-                                return const Center(
-                                  child: CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white),
-                                  ),
-                                );
-                              } else if (snapshot.hasError) {
-                                return const Center(
-                                  child: Text(
-                                    'Erro ao carregar audios!',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 30),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                );
-                              } else if (snapshot.data!.size <= 0) {
-                                return const Center(
-                                  child: Text(
-                                    'Nenhum audio encontrado!',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 30),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                );
-                              } else {
-                                return ListView(
-                                  physics: const BouncingScrollPhysics(),
-                                  padding: const EdgeInsets.all(10),
-                                  children: snapshot.data!.docs.map((d) {
-                                    AudioModel audio =
-                                        AudioModel.fromDocument(d);
-                                    return PlaylistTile(
-                                      audio: audio,
-                                      isLocal: isLocal,
-                                      isUserPlay: isUserPlay,
+                child: Stack(
+                  children: [
+                    SizedBox(
+                      height: _size.height,
+                      width: _size.width,
+                      child: CachedNetworkImage(
+                        imageUrl:
+                            "https://firebasestorage.googleapis.com/v0/b/hmb-player.appspot.com/o/abstract2.jpg?alt=media&token=1beefee6-5142-400f-b765-277ec5356c86",
+                        fit: BoxFit.cover,
+                        alignment: Alignment.center,
+                      ),
+                    ),
+                    GetBuilder<PlaylistController>(
+                      builder: ((controller) {
+                        return isLocal
+                            ? ListView.builder(
+                                physics: const BouncingScrollPhysics(),
+                                padding: const EdgeInsets.all(10),
+                                itemCount: controller.localAudios.length,
+                                itemBuilder: (context, index) {
+                                  return PlaylistTile(
+                                    audio: controller.localAudios[index],
+                                    isLocal: isLocal,
+                                    isUserPlay: isUserPlay,
+                                  );
+                                },
+                              )
+                            : FutureBuilder<QuerySnapshot>(
+                                future: isUserPlay
+                                    ? controller.getUserPlaylist()
+                                    : controller
+                                        .getRemoteAudios(snapshot?.id ?? ''),
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.white),
+                                      ),
                                     );
-                                  }).toList(),
-                                );
-                              }
-                            },
-                          );
-                  }),
+                                  } else if (snapshot.hasError) {
+                                    return const Center(
+                                      child: Text(
+                                        'Erro ao carregar audios!',
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 30),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    );
+                                  } else if (snapshot.data!.size <= 0) {
+                                    return const Center(
+                                      child: Text(
+                                        'Nenhum audio encontrado!',
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 30),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    );
+                                  } else {
+                                    return ListView(
+                                      physics: const BouncingScrollPhysics(),
+                                      padding: const EdgeInsets.all(10),
+                                      children: snapshot.data!.docs.map((d) {
+                                        AudioModel audio =
+                                            AudioModel.fromDocument(d);
+                                        return PlaylistTile(
+                                          audio: audio,
+                                          isLocal: isLocal,
+                                          isUserPlay: isUserPlay,
+                                        );
+                                      }).toList(),
+                                    );
+                                  }
+                                },
+                              );
+                      }),
+                    ),
+                  ],
                 ),
               ),
             ],

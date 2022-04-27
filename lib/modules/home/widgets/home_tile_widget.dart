@@ -1,8 +1,9 @@
+import 'dart:ui';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
-import 'package:hmbplayer/core/ui/theme_extensions.dart';
 
 class PlaylistTile extends StatelessWidget {
   final DocumentSnapshot snapshot;
@@ -14,41 +15,56 @@ class PlaylistTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: Colors.white,
-      child: ListTile(
-        leading: Hero(
-          tag: snapshot.id,
-          child: CircleAvatar(
-            radius: 30,
-            backgroundColor: Theme.of(context).canvasColor,
-            backgroundImage: CachedNetworkImageProvider(
-              snapshot.get('icon'),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(.25),
+              borderRadius: const BorderRadius.all(Radius.circular(20)),
+              border: Border.all(
+                width: 1.5,
+                color: Colors.white.withOpacity(.25),
+              ),
+            ),
+            child: ListTile(
+              leading: Hero(
+                tag: snapshot.id,
+                child: CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Theme.of(context).canvasColor,
+                  backgroundImage: CachedNetworkImageProvider(
+                    snapshot.get('icon'),
+                  ),
+                ),
+              ),
+              contentPadding: const EdgeInsets.all(8),
+              title: Text(
+                snapshot.get('title'),
+                style: TextStyle(
+                  color: Colors.grey.shade800,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              subtitle:
+                  Text(snapshot.get('type') == 0 ? 'Músicas' : 'Audiobook'),
+              trailing: Icon(
+                Icons.keyboard_arrow_right_rounded,
+                size: 36,
+                color: Colors.grey.shade700,
+              ),
+              onTap: () {
+                Get.toNamed('/home/playlist', arguments: snapshot);
+              },
             ),
           ),
         ),
-        contentPadding: const EdgeInsets.all(8),
-        title: Text(
-          snapshot.get('title'),
-          style: TextStyle(
-            color: context.themeOrange,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
-        subtitle: Text(snapshot.get('type') == 0 ? 'Músicas' : 'Audiobook'),
-        trailing: const Icon(
-          Icons.keyboard_arrow_right_rounded,
-          size: 36,
-          color: Colors.deepOrange,
-        ),
-        onTap: () {
-          Get.toNamed('/home/playlist', arguments: snapshot);
-        },
       ),
     );
   }
