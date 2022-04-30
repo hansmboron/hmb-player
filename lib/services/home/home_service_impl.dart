@@ -64,4 +64,19 @@ class HomeServiceImpl implements HomeService {
         onSuccess: onSuccess,
         onFail: onFail,
       );
+
+  @override
+  Future<void> removeAudio({
+    required AudioModel audio,
+    required String playlistName,
+    required Function onFail,
+    required Function onSuccess,
+  }) {
+    return _homeRepository.removeAudio(
+      audio: audio,
+      playlistName: playlistName,
+      onSuccess: onSuccess,
+      onFail: onFail,
+    );
+  }
 }

@@ -29,4 +29,11 @@ abstract class HomeService {
     required Function onFail,
     required Function onSuccess,
   });
+
+  Future<void> removeAudio({
+    required AudioModel audio,
+    required String playlistName,
+    required Function onFail,
+    required Function onSuccess,
+  });
 }

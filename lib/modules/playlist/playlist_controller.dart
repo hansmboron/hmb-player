@@ -1,16 +1,23 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:math' show Random;
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:hmbplayer/core/mixins/mesages_mixin.dart';
 import 'package:hmbplayer/models/audio_model.dart';
 import 'package:hmbplayer/services/home/home_service.dart';
 
+import '../../models/user_model.dart';
+
 class PlaylistController extends GetxController with MessagesMixin {
   final HomeService _homeService;
+  final FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.instance;
+  final GetStorage storage = GetStorage();
   final loading = false.obs;
   final isMuted = false.obs;
   final isFaster = false.obs;
@@ -75,6 +82,14 @@ class PlaylistController extends GetxController with MessagesMixin {
     super.dispose();
   }
 
+  bool isAdmin() {
+    dynamic admins = jsonDecode(remoteConfig.getValue('admins').asString());
+    UserModel user = UserModel.fromMap(storage.read('user'));
+    String remoteUid = admins['admins'][0];
+    String userUid = user.uid ?? '0';
+    return remoteUid == userUid;
+  }
+
   Future<QuerySnapshot<Object?>> getRemoteAudios(String snapshotId) async {
     QuerySnapshot<Object?> audios = await _homeService.remoteAudios(snapshotId);
     remoteAudios.value = audios.docs.map((d) {
@@ -124,6 +139,37 @@ class PlaylistController extends GetxController with MessagesMixin {
     );
   }
 
+  Future<void> removeAudio(
+      {required AudioModel audio, required String playlistName}) async {
+    await _homeService
+        .removeAudio(
+      audio: audio,
+      playlistName: playlistName,
+      onFail: () {
+        message(
+          MessageModel(
+            title: 'Erro!',
+            message: 'Erro ao remover ${audio.title} do banco!',
+            type: MessageType.error,
+          ),
+        );
+      },
+      onSuccess: () {
+        message(
+          MessageModel(
+            title: 'Sucesso!',
+            message: '${audio.title} REMOVIDO do banco!',
+            type: MessageType.info,
+          ),
+        );
+      },
+    )
+        .then((value) {
+      remoteAudios.removeWhere((a) => a.id == audio.id);
+      update();
+    });
+  }
+
   Future<void> addToMyPlaylist({required AudioModel audio}) async {
     await _homeService.addToMyPlaylist(
       audio: audio,
@@ -155,10 +201,19 @@ class PlaylistController extends GetxController with MessagesMixin {
     } else {
       try {
         audioPlayer.setUrl(audioPath);
+
         int result = await audioPlayer.play(audioPath,
             isLocal: isLocal, stayAwake: true);
         if (result == 1) {
           isPlaying.value = true;
+          if (isFaster.value) {
+            await audioPlayer.setPlaybackRate(1.5);
+            isSlower.value = false;
+          }
+          if (isSlower.value) {
+            await audioPlayer.setPlaybackRate(0.5);
+            isFaster.value = false;
+          }
         } else {
           isPlaying.value = false;
           message(

@@ -2,11 +2,12 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hmbplayer/models/audio_model.dart';
 import 'package:hmbplayer/models/playlist_model.dart';
 import 'package:hmbplayer/repositories/home/home_repository.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
 
 import '../../models/user_model.dart';
@@ -117,6 +118,37 @@ class HomeRepositoryImpl implements HomeRepository {
     } catch (e) {
       onFail();
       log("Falha ao deletar audio da minha playlist: ${e.toString()}");
+    }
+  }
+
+  @override
+  Future<void> removeAudio({
+    required AudioModel audio,
+    required String playlistName,
+    required Function onSuccess,
+    required Function onFail,
+  }) async {
+    try {
+      if (audio.audio != null) {
+        if (audio.audio!.contains('firebasestorage')) {
+          String fileUrl = Uri.decodeFull(path.basename(audio.audio!))
+              .replaceAll(RegExp(r'(\?alt).*'), '');
+          final Reference ref = storage.ref().child(fileUrl);
+          log('fileUrl: $fileUrl');
+          await ref.delete();
+        }
+      }
+
+      await firestore
+          .collection('playlists/$playlistName/audios')
+          .doc(audio.id)
+          .delete()
+          .then(
+            (value) => onSuccess(),
+          );
+    } catch (e) {
+      onFail();
+      log("Falha ao deletar audio do banco! ${e.toString()}");
     }
   }
 }

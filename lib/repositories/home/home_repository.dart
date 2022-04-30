@@ -31,4 +31,11 @@ abstract class HomeRepository {
     required Function onSuccess,
     required Function onFail,
   });
+
+  Future<void> removeAudio({
+    required AudioModel audio,
+    required String playlistName,
+    required Function onSuccess,
+    required Function onFail,
+  });
 }

@@ -50,7 +50,7 @@ class UploadController extends GetxController with LoaderMixin, MessagesMixin {
 
     if (result != null) {
       file = File(result.files.single.path!);
-      String fileName = result.files.first.name;
+      String fileName = result.files.first.name.split('.').first;
       audioSelected.value = fileName;
       nameEC.text = fileName;
       authorEC.text = fileName;

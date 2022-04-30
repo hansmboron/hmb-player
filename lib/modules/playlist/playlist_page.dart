@@ -2,12 +2,13 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hmbplayer/core/ui/theme_extensions.dart';
 import 'package:hmbplayer/models/audio_model.dart';
 import 'package:hmbplayer/modules/playlist/widgets/box_player_widget.dart';
+import 'package:path_provider/path_provider.dart';
+
 import './playlist_controller.dart';
 import 'widgets/audio_title_widget.dart';
 import 'widgets/playlist_tile_widget.dart';
@@ -24,6 +25,8 @@ class PlaylistPage extends GetView<PlaylistController> {
   Widget build(BuildContext context) {
     Size _size = MediaQuery.of(context).size;
     int _orientation = MediaQuery.of(context).orientation.index;
+    String playlistTitle = snapshot?.get('title') ?? '';
+    String playlistId = snapshot?.id ?? '';
 
     return WillPopScope(
       onWillPop: () async {
@@ -74,10 +77,7 @@ class PlaylistPage extends GetView<PlaylistController> {
                               ? "Arquivos Local"
                               : isUserPlay
                                   ? 'Minha Playlist'
-                                  : snapshot?.get(
-                                        'title',
-                                      ) ??
-                                      '',
+                                  : playlistTitle,
                           style: TextStyle(
                             color: context.themeOrange,
                             fontSize: 26,
@@ -157,6 +157,7 @@ class PlaylistPage extends GetView<PlaylistController> {
                                 itemBuilder: (context, index) {
                                   return PlaylistTile(
                                     audio: controller.localAudios[index],
+                                    playlistName: playlistId,
                                     isLocal: isLocal,
                                     isUserPlay: isUserPlay,
                                   );
@@ -203,6 +204,7 @@ class PlaylistPage extends GetView<PlaylistController> {
                                             AudioModel.fromDocument(d);
                                         return PlaylistTile(
                                           audio: audio,
+                                          playlistName: playlistId,
                                           isLocal: isLocal,
                                           isUserPlay: isUserPlay,
                                         );
