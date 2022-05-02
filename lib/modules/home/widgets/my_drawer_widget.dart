@@ -104,7 +104,7 @@ class MyDrawer extends StatelessWidget {
                     scale: 7.0,
                   ),
                   applicationName: 'HMB Player',
-                  applicationVersion: "1.0.0",
+                  applicationVersion: "1.0.1",
                   applicationLegalese: "Desenvolvido por Hans M. Boron - 2022",
                 );
               },

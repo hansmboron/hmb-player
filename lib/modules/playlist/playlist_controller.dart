@@ -29,7 +29,7 @@ class PlaylistController extends GetxController with MessagesMixin {
   RxList<AudioModel> localAudios = RxList();
   RxList<AudioModel> remoteAudios = RxList();
   RxBool isPlaying = false.obs;
-  Rx<Duration> duration = const Duration(seconds: 1).obs;
+  Rx<Duration> duration = const Duration(seconds: 0).obs;
   Rx<Duration> position = const Duration(seconds: 0).obs;
   String audioPath = "";
   late AudioPlayer audioPlayer;
@@ -40,7 +40,7 @@ class PlaylistController extends GetxController with MessagesMixin {
   @override
   void onInit() {
     messageListener(message);
-    audioPlayer = AudioPlayer(mode: PlayerMode.MEDIA_PLAYER);
+    audioPlayer = AudioPlayer(mode: PlayerMode.MEDIA_PLAYER, playerId: "0");
 
     audioPlayer.onDurationChanged.listen((d) {
       duration.value = d;
@@ -61,7 +61,7 @@ class PlaylistController extends GetxController with MessagesMixin {
     });
 
     audioPlayer.onPlayerCompletion.listen((event) async {
-      duration.value = const Duration(seconds: 1);
+      duration.value = const Duration(seconds: 0);
       position.value = const Duration(seconds: 0);
       if (isRepeat.value) {
         isPlaying.value = true;
@@ -289,7 +289,7 @@ class PlaylistController extends GetxController with MessagesMixin {
     isPlaying.value = false;
 
     position.value = const Duration(seconds: 0);
-    duration.value = const Duration(seconds: 1);
+    duration.value = const Duration(seconds: 0);
     audioPath = audio.audio ?? "";
     currentAudio.value = audio;
   }

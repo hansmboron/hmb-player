@@ -39,10 +39,10 @@ class AudioTitle extends StatelessWidget {
                     ? controller.currentAudio.value.title ?? ''
                     : '',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
-                  color: Colors.lightGreenAccent,
+                  color: Colors.lightGreenAccent.shade700,
                 ),
               ),
             ),

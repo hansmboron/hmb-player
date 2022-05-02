@@ -11,6 +11,7 @@ class BoxPlayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Size _size = MediaQuery.of(context).size;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -26,7 +27,7 @@ class BoxPlayer extends StatelessWidget {
                       ? Icons.repeat_one_rounded
                       : Icons.repeat_rounded,
                   color: controller.isRepeat.value
-                      ? Colors.greenAccent
+                      ? context.themeGreen
                       : context.themeOrange,
                   size: 30,
                 ),
@@ -50,7 +51,7 @@ class BoxPlayer extends StatelessWidget {
                 child: Icon(
                   Icons.fast_rewind_rounded,
                   color: controller.isSlower.value
-                      ? Colors.greenAccent
+                      ? context.themeGreen
                       : context.themeOrange,
                   size: 30,
                 ),
@@ -76,7 +77,7 @@ class BoxPlayer extends StatelessWidget {
                 child: Icon(
                   Icons.fast_forward_rounded,
                   color: controller.isFaster.value
-                      ? Colors.greenAccent
+                      ? context.themeGreen
                       : context.themeOrange,
                   size: 30,
                 ),
@@ -118,13 +119,19 @@ class BoxPlayer extends StatelessWidget {
             ),
             SizedBox(
               height: 25,
+              width: _size.width * .6,
               child: Obx(
-                () => Slider(
-                  value: controller.position.value.inSeconds.toDouble(),
-                  min: 0.0,
-                  max: controller.duration.value.inSeconds.ceilToDouble(),
-                  onChanged: controller.changeDuration,
-                ),
+                () => (controller.isPlaying.value &&
+                        controller.position.value < const Duration(seconds: 1))
+                    ? const LinearProgressIndicator(
+                        backgroundColor: Colors.transparent,
+                      )
+                    : Slider(
+                        value: controller.position.value.inSeconds.toDouble(),
+                        min: 0.0,
+                        max: controller.duration.value.inSeconds.ceilToDouble(),
+                        onChanged: controller.changeDuration,
+                      ),
               ),
             ),
             Padding(

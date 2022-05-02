@@ -30,7 +30,7 @@ class PlaylistPage extends GetView<PlaylistController> {
 
     return WillPopScope(
       onWillPop: () async {
-        // delete local files from cache when close and stop music
+        // delete local files from cache when close and stop player
         String appDir = (await getTemporaryDirectory()).path;
         Directory(appDir).delete(recursive: true);
         return await controller.audioPlayer.stop().then((value) => true);
@@ -38,7 +38,6 @@ class PlaylistPage extends GetView<PlaylistController> {
       child: Scaffold(
         backgroundColor: context.themeOrange,
         body: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
           child: Column(
             children: [
               Stack(
@@ -111,6 +110,21 @@ class PlaylistPage extends GetView<PlaylistController> {
                               ),
                       ),
                     ),
+                  ),
+                  Positioned(
+                    left: 10,
+                    top: 24,
+                    child: IconButton(
+                        onPressed: () async {
+                          // delete local files from cache when close
+                          String appDir = (await getTemporaryDirectory()).path;
+                          Directory(appDir).delete(recursive: true);
+                          await controller.audioPlayer
+                              .stop()
+                              .then((value) => Get.back());
+                        },
+                        color: Colors.white60,
+                        icon: const Icon(Icons.arrow_back_ios_new_rounded)),
                   ),
                 ],
               ),
