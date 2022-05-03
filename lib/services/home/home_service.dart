@@ -13,6 +13,7 @@ abstract class HomeService {
   Future<void> addAudio({
     required AudioModel audioModel,
     required File file,
+    required String fileName,
     required String playlistName,
     required Function onFail,
     required Function onSuccess,

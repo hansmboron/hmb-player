@@ -8,7 +8,6 @@ import 'package:hmbplayer/models/audio_model.dart';
 import 'package:hmbplayer/models/playlist_model.dart';
 import 'package:hmbplayer/repositories/home/home_repository.dart';
 import 'package:path/path.dart' as path;
-import 'package:uuid/uuid.dart';
 
 import '../../models/user_model.dart';
 
@@ -56,6 +55,7 @@ class HomeRepositoryImpl implements HomeRepository {
   Future<void> addAudio({
     required AudioModel audioModel,
     required File file,
+    required String fileName,
     required String playlistName,
     required Function onFail,
     required Function onSuccess,
@@ -64,7 +64,7 @@ class HomeRepositoryImpl implements HomeRepository {
       final UploadTask task = storage
           .ref(playlistName)
           .child(
-            const Uuid().v1(),
+            fileName,
           )
           .putFile(file);
       await task.whenComplete(() async =>

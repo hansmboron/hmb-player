@@ -29,6 +29,7 @@ class HomeServiceImpl implements HomeService {
   Future<void> addAudio({
     required AudioModel audioModel,
     required File file,
+    required String fileName,
     required String playlistName,
     required Function onFail,
     required Function onSuccess,
@@ -36,6 +37,7 @@ class HomeServiceImpl implements HomeService {
       _homeRepository.addAudio(
         audioModel: audioModel,
         file: file,
+        fileName: fileName,
         playlistName: playlistName,
         onFail: onFail,
         onSuccess: onSuccess,

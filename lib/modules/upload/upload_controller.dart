@@ -21,6 +21,7 @@ class UploadController extends GetxController with LoaderMixin, MessagesMixin {
   final nameEC = TextEditingController();
   final authorEC = TextEditingController();
   File? file;
+  String fileNameWithExt = "arquivo_de_audio";
 
   UploadController({
     required HomeService homeService,
@@ -51,6 +52,7 @@ class UploadController extends GetxController with LoaderMixin, MessagesMixin {
     if (result != null) {
       file = File(result.files.single.path!);
       String fileName = result.files.first.name.split('.').first;
+      fileNameWithExt = result.files.first.name;
       audioSelected.value = fileName;
       nameEC.text = fileName;
       authorEC.text = fileName;
@@ -72,6 +74,7 @@ class UploadController extends GetxController with LoaderMixin, MessagesMixin {
         audioModel: audioModel,
         file: file!,
         playlistName: playSelected.value,
+        fileName: fileNameWithExt,
         onFail: () {
           log('fail');
           loading.value = false;

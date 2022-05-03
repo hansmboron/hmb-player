@@ -122,7 +122,9 @@ class BoxPlayer extends StatelessWidget {
               width: _size.width * .6,
               child: Obx(
                 () => (controller.isPlaying.value &&
-                        controller.position.value < const Duration(seconds: 1))
+                        !isLocal &&
+                        controller.position.value <
+                            const Duration(milliseconds: 1))
                     ? const LinearProgressIndicator(
                         backgroundColor: Colors.transparent,
                       )
