@@ -1,5 +1,4 @@
-import 'dart:ui';
-
+import 'package:animated_card/animated_card.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -17,17 +16,19 @@ class PlaylistTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+      child: AnimatedCard(
+        direction: AnimatedCardDirection.right,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          // child: BackdropFilter(
+          //   filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(.25),
+              color: Colors.white.withOpacity(.3),
               borderRadius: const BorderRadius.all(Radius.circular(20)),
               border: Border.all(
                 width: 1.5,
-                color: Colors.white.withOpacity(.25),
+                color: Colors.white.withOpacity(.3),
               ),
             ),
             child: ListTile(
@@ -47,6 +48,7 @@ class PlaylistTile extends StatelessWidget {
                 style: TextStyle(
                   color: Colors.grey.shade800,
                   fontWeight: FontWeight.bold,
+                  height: 1.1,
                   fontSize: 20,
                 ),
                 maxLines: 2,
@@ -65,6 +67,7 @@ class PlaylistTile extends StatelessWidget {
             ),
           ),
         ),
+        // ),
       ),
     );
   }

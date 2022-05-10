@@ -1,6 +1,7 @@
-import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hmbplayer/models/audio_model.dart';
+
 import './upload_controller.dart';
 import 'widgets/dropdown_widget.dart';
 
@@ -19,11 +20,13 @@ class UploadPage extends GetView<UploadController> {
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         padding:
-            EdgeInsets.symmetric(vertical: 12, horizontal: _size.width * 0.04),
+            EdgeInsets.symmetric(vertical: 24, horizontal: _size.width * 0.04),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
+              Obx(() => Text("Audio: ${controller.audioSelected.value}")),
+              const SizedBox(height: 8),
               SizedBox(
                 height: 50,
                 width: double.maxFinite,
@@ -36,8 +39,6 @@ class UploadPage extends GetView<UploadController> {
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
-              Obx(() => Text("Audio: ${controller.audioSelected.value}")),
               const SizedBox(height: 8),
               TextFormField(
                 controller: controller.nameEC,
@@ -102,20 +103,23 @@ class UploadPage extends GetView<UploadController> {
               ),
               const SizedBox(height: 16),
               Obx(
-                () => ElevatedButton(
-                  onPressed: controller.audioSelected.value == ''
-                      ? null
-                      : () {
-                          FocusScope.of(context).unfocus();
-                          if (_formKey.currentState!.validate()) {
-                            AudioModel audio = AudioModel(
-                              title: controller.nameEC.text,
-                              author: controller.authorEC.text,
-                            );
-                            controller.addAudio(audio);
-                          }
-                        },
-                  child: const Text('Enviar'),
+                () => SizedBox(
+                  width: double.maxFinite,
+                  child: ElevatedButton(
+                    onPressed: controller.audioSelected.value == ''
+                        ? null
+                        : () {
+                            FocusScope.of(context).unfocus();
+                            if (_formKey.currentState!.validate()) {
+                              AudioModel audio = AudioModel(
+                                title: controller.nameEC.text,
+                                author: controller.authorEC.text,
+                              );
+                              controller.addAudio(audio);
+                            }
+                          },
+                    child: const Text('Enviar'),
+                  ),
                 ),
               ),
             ],

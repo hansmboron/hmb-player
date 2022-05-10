@@ -91,7 +91,7 @@ class UploadController extends GetxController with LoaderMixin, MessagesMixin {
           message(
             MessageModel(
                 title: 'Sucesso',
-                message: 'Enviado com sucesso',
+                message: '$fileNameWithExt enviado com sucesso',
                 type: MessageType.info),
           );
         });
