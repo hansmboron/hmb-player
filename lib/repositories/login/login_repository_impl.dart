@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:hmbplayer/models/user_model.dart';
+import '../../models/user_model.dart';
 
 import 'login_repository.dart';
 
@@ -19,13 +19,12 @@ class LoginRepositoryImpl implements LoginRepository {
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
+      final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
 
-      User? fuser = userCredential.user;
+      final User? fuser = userCredential.user;
 
       if (fuser != null) {
-        UserModel userModel = UserModel(
+        final UserModel userModel = UserModel(
           uid: fuser.uid,
           email: fuser.email,
           name: fuser.displayName,
@@ -33,13 +32,10 @@ class LoginRepositoryImpl implements LoginRepository {
         );
         final box = GetStorage();
         box.write('user', userModel.toMap());
-        log("USUARIO lOGADO: ${userModel.name}");
-        log("USUARIO lOGADO: ${userModel.email}");
+        log('USUARIO lOGADO: ${userModel.name}');
+        log('USUARIO lOGADO: ${userModel.email}');
 
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userModel.uid)
-            .set(userModel.toMap());
+        await FirebaseFirestore.instance.collection('users').doc(userModel.uid).set(userModel.toMap());
       }
       return fuser;
     }
@@ -48,9 +44,7 @@ class LoginRepositoryImpl implements LoginRepository {
 
   @override
   Future<QuerySnapshot<Object?>> getUsersAudios(String uid) async {
-    return await FirebaseFirestore.instance
-        .collection('users/$uid/playlist')
-        .get();
+    return FirebaseFirestore.instance.collection('users/$uid/playlist').get();
   }
 
   @override

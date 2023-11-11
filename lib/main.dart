@@ -3,12 +3,12 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:hmbplayer/core/ui/theme_extensions.dart';
-import 'package:hmbplayer/routes/auth_routers.dart';
-import 'package:hmbplayer/routes/home_routers.dart';
-import 'package:hmbplayer/routes/settings_routers.dart';
-import 'package:hmbplayer/routes/upload_routers.dart';
-import 'package:hmbplayer/routes/users_routers.dart';
+import 'core/ui/theme_extensions.dart';
+import 'routes/auth_routers.dart';
+import 'routes/home_routers.dart';
+import 'routes/settings_routers.dart';
+import 'routes/upload_routers.dart';
+import 'routes/users_routers.dart';
 
 import 'core/bindings/application_bindings.dart';
 
@@ -21,7 +21,7 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: context.themeOrange,
-        fontFamily: "Nunito",
+        fontFamily: 'Nunito',
       ),
       getPages: [
         ...AuthRouters.routers,

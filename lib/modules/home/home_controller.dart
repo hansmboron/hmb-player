@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:hmbplayer/models/user_model.dart';
+import '../../models/user_model.dart';
 
 import '../../services/login/login_service.dart';
 
@@ -14,14 +14,13 @@ class HomeController extends GetxController {
   final GetStorage storage = GetStorage();
   RxList userAudios = RxList();
 
-  HomeController({required LoginService loginService})
-      : _loginService = loginService;
+  HomeController({required LoginService loginService}) : _loginService = loginService;
 
   bool isAdmin() {
-    dynamic admins = jsonDecode(remoteConfig.getValue('admins').asString());
-    UserModel user = UserModel.fromMap(storage.read('user'));
-    String remoteUid = admins['admins'][0];
-    String userUid = user.uid ?? '0';
+    final dynamic admins = jsonDecode(remoteConfig.getValue('admins').asString());
+    final UserModel user = UserModel.fromMap(storage.read('user'));
+    final String remoteUid = admins['admins'][0];
+    final String userUid = user.uid ?? '0';
     log('IsAdmin: ${remoteUid == userUid}');
     return remoteUid == userUid;
   }
@@ -43,6 +42,6 @@ class HomeController extends GetxController {
   Future<void> logout() async {
     await _loginService.logout();
     await storage.erase();
-    Get.offAllNamed("/login");
+    Get.offAllNamed('/login');
   }
 }

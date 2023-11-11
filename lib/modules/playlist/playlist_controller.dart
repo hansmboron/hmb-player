@@ -8,9 +8,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:hmbplayer/core/mixins/mesages_mixin.dart';
-import 'package:hmbplayer/models/audio_model.dart';
-import 'package:hmbplayer/services/home/home_service.dart';
+import '../../core/mixins/mesages_mixin.dart';
+import '../../models/audio_model.dart';
+import '../../services/home/home_service.dart';
 
 import '../../models/user_model.dart';
 
@@ -31,47 +31,63 @@ class PlaylistController extends GetxController with MessagesMixin {
   RxBool isPlaying = false.obs;
   Rx<Duration> duration = const Duration(seconds: 0).obs;
   Rx<Duration> position = const Duration(seconds: 0).obs;
-  String audioPath = "";
+  String audioPath = '';
   late AudioPlayer audioPlayer;
 
-  PlaylistController({required HomeService homeService})
-      : _homeService = homeService;
+  PlaylistController({required HomeService homeService}) : _homeService = homeService;
 
   @override
   void onInit() {
     messageListener(message);
-    audioPlayer = AudioPlayer(mode: PlayerMode.MEDIA_PLAYER, playerId: "0");
+    audioPlayer = AudioPlayer(playerId: '0');
+    audioPlayer.setPlayerMode(PlayerMode.mediaPlayer);
 
     audioPlayer.onDurationChanged.listen((d) {
       duration.value = d;
     });
 
-    audioPlayer.onAudioPositionChanged.listen((p) {
+    audioPlayer.onPositionChanged.listen((p) {
       position.value = p;
     });
 
-    audioPlayer.onPlayerError.listen((event) {
-      message(
-        MessageModel(
-          title: 'Erro!',
-          message: 'Erro ao reproduzir audio!',
-          type: MessageType.error,
-        ),
-      );
-    });
+    audioPlayer.onPlayerStateChanged.listen((event) async {
+      switch (event) {
+        case PlayerState.completed:
+          duration.value = const Duration(seconds: 0);
+          position.value = const Duration(seconds: 0);
+          if (isRepeat.value) {
+            isPlaying.value = true;
+          } else {
+            isPlaying.value = false;
+            isRepeat.value = false;
+          }
 
-    audioPlayer.onPlayerCompletion.listen((event) async {
-      duration.value = const Duration(seconds: 0);
-      position.value = const Duration(seconds: 0);
-      if (isRepeat.value) {
-        isPlaying.value = true;
-      } else {
-        isPlaying.value = false;
-        isRepeat.value = false;
+          // auto play next song
+          await playNext();
+          break;
+        case PlayerState.playing:
+          isPlaying.value = true;
+          if (isFaster.value) {
+            await audioPlayer.setPlaybackRate(1.5);
+            isSlower.value = false;
+          }
+          if (isSlower.value) {
+            await audioPlayer.setPlaybackRate(0.5);
+            isFaster.value = false;
+          }
+          break;
+        case PlayerState.stopped:
+          isPlaying.value = false;
+          break;
+        default:
+          message(
+            MessageModel(
+              title: 'Erro!',
+              message: 'Erro ao reproduzir audio!',
+              type: MessageType.error,
+            ),
+          );
       }
-
-      // auto play next song
-      await playNext();
     });
     super.onInit();
   }
@@ -83,15 +99,15 @@ class PlaylistController extends GetxController with MessagesMixin {
   }
 
   bool isAdmin() {
-    dynamic admins = jsonDecode(remoteConfig.getValue('admins').asString());
-    UserModel user = UserModel.fromMap(storage.read('user'));
-    String remoteUid = admins['admins'][0];
-    String userUid = user.uid ?? '0';
+    final dynamic admins = jsonDecode(remoteConfig.getValue('admins').asString());
+    final UserModel user = UserModel.fromMap(storage.read('user'));
+    final String remoteUid = admins['admins'][0];
+    final String userUid = user.uid ?? '0';
     return remoteUid == userUid;
   }
 
   Future<QuerySnapshot<Object?>> getRemoteAudios(String snapshotId) async {
-    QuerySnapshot<Object?> audios = await _homeService.remoteAudios(snapshotId);
+    final QuerySnapshot<Object?> audios = await _homeService.remoteAudios(snapshotId);
     remoteAudios.value = audios.docs.map((d) {
       return AudioModel.fromDocument(d);
     }).toList();
@@ -100,7 +116,7 @@ class PlaylistController extends GetxController with MessagesMixin {
   }
 
   Future<QuerySnapshot<Object?>> getUserPlaylist() async {
-    QuerySnapshot<Object?> audios = await _homeService.getUserPlaylist();
+    final QuerySnapshot<Object?> audios = await _homeService.getUserPlaylist();
     remoteAudios.value = audios.docs.map((d) {
       return AudioModel.fromDocument(d);
     }).toList();
@@ -139,8 +155,7 @@ class PlaylistController extends GetxController with MessagesMixin {
     );
   }
 
-  Future<void> removeAudio(
-      {required AudioModel audio, required String playlistName}) async {
+  Future<void> removeAudio({required AudioModel audio, required String playlistName}) async {
     await _homeService
         .removeAudio(
       audio: audio,
@@ -200,30 +215,8 @@ class PlaylistController extends GetxController with MessagesMixin {
       isPlaying.value = false;
     } else {
       try {
-        audioPlayer.setUrl(audioPath);
-
-        int result = await audioPlayer.play(audioPath,
-            isLocal: isLocal, stayAwake: true);
-        if (result == 1) {
-          isPlaying.value = true;
-          if (isFaster.value) {
-            await audioPlayer.setPlaybackRate(1.5);
-            isSlower.value = false;
-          }
-          if (isSlower.value) {
-            await audioPlayer.setPlaybackRate(0.5);
-            isFaster.value = false;
-          }
-        } else {
-          isPlaying.value = false;
-          message(
-            MessageModel(
-              title: 'Erro!',
-              message: 'Falha ao reproduzir audio',
-              type: MessageType.error,
-            ),
-          );
-        }
+        audioPlayer.setSource(UrlSource(audioPath));
+        await audioPlayer.play(UrlSource(audioPath));
       } on RangeError catch (e) {
         message(
           MessageModel(
@@ -239,21 +232,16 @@ class PlaylistController extends GetxController with MessagesMixin {
 
   Future<void> playNext() async {
     if (localAudios.isNotEmpty && localAudios.length > 1 && !isRepeat.value) {
-      AudioModel audio =
-          localAudios.firstWhere((a) => a.id == currentAudio.value.id);
-      var pos = localAudios.indexOf(audio);
+      final AudioModel audio = localAudios.firstWhere((a) => a.id == currentAudio.value.id);
+      final pos = localAudios.indexOf(audio);
 
       if (isShuffle.value) {
-        await setSelected(localAudios[Random().nextInt(localAudios.length)])
-            .then(
-          (value) async => await onPlayBtn(isLocal: true),
+        await setSelected(localAudios[Random().nextInt(localAudios.length)]).then(
+          (value) async => onPlayBtn(isLocal: true),
         );
       } else {
-        await setSelected(localAudios.length > pos + 1
-                ? localAudios[pos + 1]
-                : localAudios[0])
-            .then(
-          (value) async => await onPlayBtn(isLocal: true),
+        await setSelected(localAudios.length > pos + 1 ? localAudios[pos + 1] : localAudios[0]).then(
+          (value) async => onPlayBtn(isLocal: true),
         );
       }
     }
@@ -261,24 +249,19 @@ class PlaylistController extends GetxController with MessagesMixin {
     if (remoteAudios.isNotEmpty && remoteAudios.length > 1 && !isRepeat.value) {
       int pos = 0;
       try {
-        AudioModel audio =
-            remoteAudios.firstWhere((a) => a.id == currentAudio.value.id);
+        final AudioModel audio = remoteAudios.firstWhere((a) => a.id == currentAudio.value.id);
         pos = remoteAudios.indexOf(audio);
       } catch (e) {
         log(e.toString());
       }
 
       if (isShuffle.value) {
-        await setSelected(remoteAudios[Random().nextInt(remoteAudios.length)])
-            .then(
-          (value) async => await onPlayBtn(isLocal: false),
+        await setSelected(remoteAudios[Random().nextInt(remoteAudios.length)]).then(
+          (value) async => onPlayBtn(isLocal: false),
         );
       } else {
-        await setSelected(remoteAudios.length > pos + 1
-                ? remoteAudios[pos + 1]
-                : remoteAudios[0])
-            .then(
-          (value) async => await onPlayBtn(isLocal: false),
+        await setSelected(remoteAudios.length > pos + 1 ? remoteAudios[pos + 1] : remoteAudios[0]).then(
+          (value) async => onPlayBtn(isLocal: false),
         );
       }
     }
@@ -290,15 +273,15 @@ class PlaylistController extends GetxController with MessagesMixin {
 
     position.value = const Duration(seconds: 0);
     duration.value = const Duration(seconds: 0);
-    audioPath = audio.audio ?? "";
+    audioPath = audio.audio ?? '';
     currentAudio.value = audio;
   }
 
   Future<void> pickFiles() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
+    final FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowMultiple: true,
       type: FileType.audio,
-      dialogTitle: "Selecione audios",
+      dialogTitle: 'Selecione audios',
     );
 
     if (result != null) {
@@ -323,7 +306,7 @@ class PlaylistController extends GetxController with MessagesMixin {
   }
 
   Future<void> changeDuration(double value) async {
-    Duration newDuration = Duration(seconds: value.toInt());
+    final Duration newDuration = Duration(seconds: value.toInt());
     await audioPlayer.seek(newDuration);
   }
 
@@ -385,10 +368,10 @@ class PlaylistController extends GetxController with MessagesMixin {
 
   Future<void> toggleRepeat() async {
     if (isRepeat.value) {
-      await audioPlayer.setReleaseMode(ReleaseMode.RELEASE);
+      await audioPlayer.setReleaseMode(ReleaseMode.release);
       isRepeat.value = false;
     } else {
-      await audioPlayer.setReleaseMode(ReleaseMode.LOOP);
+      await audioPlayer.setReleaseMode(ReleaseMode.loop);
       isRepeat.value = true;
       message(
         MessageModel(

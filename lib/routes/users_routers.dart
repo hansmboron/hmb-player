@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:hmbplayer/modules/users/users_bindings.dart';
-import 'package:hmbplayer/modules/users/users_page.dart';
+import '../modules/users/users_bindings.dart';
+import '../modules/users/users_page.dart';
 
 class UsersRouters {
   UsersRouters._();

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hmbplayer/core/ui/theme_extensions.dart';
-import 'package:hmbplayer/modules/playlist/playlist_controller.dart';
+import '../../../core/ui/theme_extensions.dart';
+import '../playlist_controller.dart';
 
 class BoxPlayer extends StatelessWidget {
   final PlaylistController controller = Get.find();
   final bool isLocal;
 
-  BoxPlayer({Key? key, required this.isLocal}) : super(key: key);
+  BoxPlayer({super.key, required this.isLocal});
 
   @override
   Widget build(BuildContext context) {
-    Size _size = MediaQuery.of(context).size;
+    final Size size = MediaQuery.of(context).size;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -23,12 +23,8 @@ class BoxPlayer extends StatelessWidget {
               () => GestureDetector(
                 onTap: controller.toggleRepeat,
                 child: Icon(
-                  controller.isRepeat.value
-                      ? Icons.repeat_one_rounded
-                      : Icons.repeat_rounded,
-                  color: controller.isRepeat.value
-                      ? context.themeGreen
-                      : context.themeOrange,
+                  controller.isRepeat.value ? Icons.repeat_one_rounded : Icons.repeat_rounded,
+                  color: controller.isRepeat.value ? context.themeGreen : context.themeOrange,
                   size: 30,
                 ),
               ),
@@ -37,9 +33,7 @@ class BoxPlayer extends StatelessWidget {
               () => GestureDetector(
                 onTap: controller.toggleShuffle,
                 child: Icon(
-                  controller.isShuffle.value
-                      ? Icons.shuffle_rounded
-                      : Icons.arrow_right_alt_rounded,
+                  controller.isShuffle.value ? Icons.shuffle_rounded : Icons.arrow_right_alt_rounded,
                   color: context.themeOrange,
                   size: 30,
                 ),
@@ -50,9 +44,7 @@ class BoxPlayer extends StatelessWidget {
                 onTap: controller.slower,
                 child: Icon(
                   Icons.fast_rewind_rounded,
-                  color: controller.isSlower.value
-                      ? context.themeGreen
-                      : context.themeOrange,
+                  color: controller.isSlower.value ? context.themeGreen : context.themeOrange,
                   size: 30,
                 ),
               ),
@@ -63,9 +55,7 @@ class BoxPlayer extends StatelessWidget {
                   controller.onPlayBtn(isLocal: isLocal);
                 },
                 child: Icon(
-                  controller.isPlaying.value
-                      ? Icons.pause_circle_filled_rounded
-                      : Icons.play_circle_filled_rounded,
+                  controller.isPlaying.value ? Icons.pause_circle_filled_rounded : Icons.play_circle_filled_rounded,
                   color: context.themeOrange,
                   size: 50,
                 ),
@@ -76,9 +66,7 @@ class BoxPlayer extends StatelessWidget {
                 onTap: controller.faster,
                 child: Icon(
                   Icons.fast_forward_rounded,
-                  color: controller.isFaster.value
-                      ? context.themeGreen
-                      : context.themeOrange,
+                  color: controller.isFaster.value ? context.themeGreen : context.themeOrange,
                   size: 30,
                 ),
               ),
@@ -95,9 +83,7 @@ class BoxPlayer extends StatelessWidget {
               () => GestureDetector(
                 onTap: controller.toggleMute,
                 child: Icon(
-                  controller.isMuted.value
-                      ? Icons.volume_mute_rounded
-                      : Icons.volume_up_rounded,
+                  controller.isMuted.value ? Icons.volume_mute_rounded : Icons.volume_up_rounded,
                   color: context.themeOrange,
                   size: 30,
                 ),
@@ -119,12 +105,9 @@ class BoxPlayer extends StatelessWidget {
             ),
             SizedBox(
               height: 25,
-              width: _size.width * .6,
+              width: size.width * .6,
               child: Obx(
-                () => (controller.isPlaying.value &&
-                        !isLocal &&
-                        controller.position.value <
-                            const Duration(milliseconds: 1))
+                () => (controller.isPlaying.value && !isLocal && controller.position.value < const Duration(milliseconds: 1))
                     ? const LinearProgressIndicator(
                         backgroundColor: Colors.transparent,
                       )

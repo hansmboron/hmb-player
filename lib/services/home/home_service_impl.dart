@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hmbplayer/models/audio_model.dart';
-import 'package:hmbplayer/models/playlist_model.dart';
-import 'package:hmbplayer/services/home/home_service.dart';
+import '../../models/audio_model.dart';
+import '../../models/playlist_model.dart';
+import 'home_service.dart';
 
 import '../../repositories/home/home_repository.dart';
 
@@ -15,15 +15,13 @@ class HomeServiceImpl implements HomeService {
   }) : _homeRepository = homeRepository;
 
   @override
-  Future<QuerySnapshot<Object?>> remoteAudios(String snapshotId) =>
-      _homeRepository.remoteAudios(snapshotId);
+  Future<QuerySnapshot<Object?>> remoteAudios(String snapshotId) => _homeRepository.remoteAudios(snapshotId);
 
   @override
   Future<List<PlaylistModel?>> getPlaylists() => _homeRepository.getPlaylists();
 
   @override
-  Future<QuerySnapshot<Object?>> getUserPlaylist() =>
-      _homeRepository.getUserPlaylist();
+  Future<QuerySnapshot<Object?>> getUserPlaylist() => _homeRepository.getUserPlaylist();
 
   @override
   Future<void> addAudio({

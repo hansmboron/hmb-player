@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:hmbplayer/modules/settings/settings_bindings.dart';
-import 'package:hmbplayer/modules/settings/settings_page.dart';
+import '../modules/settings/settings_bindings.dart';
+import '../modules/settings/settings_page.dart';
 
 class SettingsRouters {
   SettingsRouters._();

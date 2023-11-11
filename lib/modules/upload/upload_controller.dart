@@ -4,11 +4,11 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hmbplayer/core/mixins/loader_mixin.dart';
-import 'package:hmbplayer/core/mixins/mesages_mixin.dart';
-import 'package:hmbplayer/models/audio_model.dart';
-import 'package:hmbplayer/models/playlist_model.dart';
-import 'package:hmbplayer/services/home/home_service.dart';
+import '../../core/mixins/loader_mixin.dart';
+import '../../core/mixins/mesages_mixin.dart';
+import '../../models/audio_model.dart';
+import '../../models/playlist_model.dart';
+import '../../services/home/home_service.dart';
 
 class UploadController extends GetxController with LoaderMixin, MessagesMixin {
   final HomeService _homeService;
@@ -21,7 +21,7 @@ class UploadController extends GetxController with LoaderMixin, MessagesMixin {
   final nameEC = TextEditingController();
   final authorEC = TextEditingController();
   File? file;
-  String fileNameWithExt = "arquivo_de_audio";
+  String fileNameWithExt = 'arquivo_de_audio';
 
   UploadController({
     required HomeService homeService,
@@ -43,15 +43,15 @@ class UploadController extends GetxController with LoaderMixin, MessagesMixin {
   }
 
   Future<void> pickAudio() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
+    final FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowMultiple: true,
       type: FileType.audio,
-      dialogTitle: "Selecione audios",
+      dialogTitle: 'Selecione audios',
     );
 
     if (result != null) {
       file = File(result.files.single.path!);
-      String fileName = result.files.first.name.split('.').first;
+      final String fileName = result.files.first.name.split('.').first;
       fileNameWithExt = result.files.first.name;
       audioSelected.value = fileName;
       nameEC.text = fileName;
@@ -79,20 +79,14 @@ class UploadController extends GetxController with LoaderMixin, MessagesMixin {
           log('fail');
           loading.value = false;
           message(
-            MessageModel(
-                title: 'Erro',
-                message: 'Erro ao enviar arquivo',
-                type: MessageType.error),
+            MessageModel(title: 'Erro', message: 'Erro ao enviar arquivo', type: MessageType.error),
           );
         },
         onSuccess: () {
           log('success');
           loading.value = false;
           message(
-            MessageModel(
-                title: 'Sucesso',
-                message: '$fileNameWithExt enviado com sucesso',
-                type: MessageType.info),
+            MessageModel(title: 'Sucesso', message: '$fileNameWithExt enviado com sucesso', type: MessageType.info),
           );
         });
 

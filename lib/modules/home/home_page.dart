@@ -2,18 +2,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hmbplayer/core/ui/theme_extensions.dart';
-import 'package:hmbplayer/modules/home/widgets/home_tile_widget.dart';
-import 'package:hmbplayer/modules/home/widgets/my_drawer_widget.dart';
+import '../../core/ui/theme_extensions.dart';
+import 'widgets/home_tile_widget.dart';
+import 'widgets/my_drawer_widget.dart';
 
 import 'home_controller.dart';
 
 class HomePage extends GetView<HomeController> {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Size _size = MediaQuery.of(context).size;
+    final Size size = MediaQuery.of(context).size;
 
     return Scaffold(
       appBar: AppBar(
@@ -31,7 +31,7 @@ class HomePage extends GetView<HomeController> {
             ),
             const SizedBox(width: 6),
             const Text(
-              "HMB Player",
+              'HMB Player',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
@@ -57,11 +57,10 @@ class HomePage extends GetView<HomeController> {
       body: Stack(
         children: [
           SizedBox(
-            height: _size.height,
-            width: _size.width,
+            height: size.height,
+            width: size.width,
             child: CachedNetworkImage(
-              imageUrl:
-                  "https://firebasestorage.googleapis.com/v0/b/hmb-player.appspot.com/o/abstract2.jpg?alt=media&token=1beefee6-5142-400f-b765-277ec5356c86",
+              imageUrl: 'https://firebasestorage.googleapis.com/v0/b/hmb-player.appspot.com/o/abstract2.jpg?alt=media&token=1beefee6-5142-400f-b765-277ec5356c86',
               fit: BoxFit.cover,
               alignment: Alignment.center,
             ),
@@ -69,13 +68,10 @@ class HomePage extends GetView<HomeController> {
           Padding(
             padding: EdgeInsets.symmetric(
               vertical: 0,
-              horizontal: _size.width * 0.04,
+              horizontal: size.width * 0.04,
             ),
             child: FutureBuilder<QuerySnapshot>(
-              future: FirebaseFirestore.instance
-                  .collection('playlists')
-                  .orderBy('type')
-                  .get(),
+              future: FirebaseFirestore.instance.collection('playlists').orderBy('type').get(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return const Center(
@@ -85,13 +81,11 @@ class HomePage extends GetView<HomeController> {
                   );
                 } else if (snapshot.hasError) {
                   return const Center(
-                    child: Text('Erro ao carregar playlists!',
-                        style: TextStyle(color: Colors.red, fontSize: 30)),
+                    child: Text('Erro ao carregar playlists!', style: TextStyle(color: Colors.red, fontSize: 30)),
                   );
                 } else if (snapshot.data!.size <= 0) {
                   return const Center(
-                    child: Text('Erro ao carregar playlists!',
-                        style: TextStyle(color: Colors.red, fontSize: 30)),
+                    child: Text('Erro ao carregar playlists!', style: TextStyle(color: Colors.red, fontSize: 30)),
                   );
                 } else {
                   return ListView(

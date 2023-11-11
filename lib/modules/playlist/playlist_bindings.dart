@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
-import 'package:hmbplayer/repositories/home/home_repository.dart';
-import 'package:hmbplayer/repositories/home/home_repository_impl.dart';
-import 'package:hmbplayer/services/home/home_service.dart';
-import 'package:hmbplayer/services/home/home_service_impl.dart';
+import '../../repositories/home/home_repository.dart';
+import '../../repositories/home/home_repository_impl.dart';
+import '../../services/home/home_service.dart';
+import '../../services/home/home_service_impl.dart';
 
 import './playlist_controller.dart';
 

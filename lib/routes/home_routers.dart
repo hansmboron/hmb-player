@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:hmbplayer/modules/playlist/playlist_bindings.dart';
-import 'package:hmbplayer/modules/playlist/playlist_page.dart';
+import '../modules/playlist/playlist_bindings.dart';
+import '../modules/playlist/playlist_page.dart';
 
 import '../modules/home/home_bindings.dart';
 import '../modules/home/home_page.dart';

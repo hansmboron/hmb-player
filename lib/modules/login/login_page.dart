@@ -4,12 +4,12 @@ import 'package:get/get.dart';
 import 'login_controller.dart';
 
 class LoginPage extends GetView<LoginController> {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Size _size = MediaQuery.of(context).size;
-    Orientation _orientation = MediaQuery.of(context).orientation;
+    final Size size = MediaQuery.of(context).size;
+    final Orientation orientation = MediaQuery.of(context).orientation;
 
     return Scaffold(
       body: Stack(
@@ -27,28 +27,28 @@ class LoginPage extends GetView<LoginController> {
           Column(
             children: [
               Visibility(
-                visible: _orientation == Orientation.portrait,
-                child: Padding(
-                  padding: EdgeInsets.only(top: _size.height * 0.18),
-                  child: Image.asset(
-                    'assets/images/logo.png',
-                    height: _size.width * 0.4,
-                    width: _size.width * 0.4,
-                  ),
-                ),
+                visible: orientation == Orientation.portrait,
                 replacement: Padding(
-                  padding: EdgeInsets.only(top: _size.height * .08),
+                  padding: EdgeInsets.only(top: size.height * .08),
                   child: Image.asset(
                     'assets/images/logo.png',
                     height: 120,
                     width: 120,
                   ),
                 ),
+                child: Padding(
+                  padding: EdgeInsets.only(top: size.height * 0.18),
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    height: size.width * 0.4,
+                    width: size.width * 0.4,
+                  ),
+                ),
               ),
               Stack(
                 children: <Widget>[
                   Text(
-                    "HMB Player",
+                    'HMB Player',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 28,
@@ -59,7 +59,7 @@ class LoginPage extends GetView<LoginController> {
                     ),
                   ),
                   Text(
-                    "HMB Player",
+                    'HMB Player',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 28,
@@ -71,7 +71,7 @@ class LoginPage extends GetView<LoginController> {
               InkWell(
                 onTap: () => controller.login(),
                 child: Container(
-                  margin: EdgeInsets.only(top: _size.height * .05),
+                  margin: EdgeInsets.only(top: size.height * .05),
                   clipBehavior: Clip.antiAlias,
                   width: Get.width * 0.9,
                   decoration: BoxDecoration(
@@ -99,7 +99,7 @@ class LoginPage extends GetView<LoginController> {
                   ),
                 ),
               ),
-              SizedBox(height: _size.height * .04),
+              SizedBox(height: size.height * .04),
               ElevatedButton.icon(
                 onPressed: () {
                   Get.toNamed('/home/local');

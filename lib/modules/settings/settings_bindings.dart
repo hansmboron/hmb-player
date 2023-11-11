@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:hmbplayer/modules/settings/settings_controller.dart';
+import 'settings_controller.dart';
 
 class SettingsBindings implements Bindings {
   @override

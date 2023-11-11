@@ -4,9 +4,9 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:hmbplayer/models/audio_model.dart';
-import 'package:hmbplayer/models/playlist_model.dart';
-import 'package:hmbplayer/repositories/home/home_repository.dart';
+import '../../models/audio_model.dart';
+import '../../models/playlist_model.dart';
+import 'home_repository.dart';
 import 'package:path/path.dart' as path;
 
 import '../../models/user_model.dart';
@@ -18,31 +18,22 @@ class HomeRepositoryImpl implements HomeRepository {
 
   @override
   Future<QuerySnapshot<Object?>> remoteAudios(String snapshotId) {
-    return FirebaseFirestore.instance
-        .collection('playlists/$snapshotId/audios')
-        .orderBy('title')
-        .get();
+    return FirebaseFirestore.instance.collection('playlists/$snapshotId/audios').orderBy('title').get();
   }
 
   @override
   Future<QuerySnapshot<Object?>> getUserPlaylist() {
-    UserModel user = UserModel.fromMap(box.read('user'));
-    return FirebaseFirestore.instance
-        .collection('users/${user.uid}/my_playlist')
-        .orderBy('title')
-        .get();
+    final UserModel user = UserModel.fromMap(box.read('user'));
+    return FirebaseFirestore.instance.collection('users/${user.uid}/my_playlist').orderBy('title').get();
   }
 
   @override
   Future<List<PlaylistModel?>> getPlaylists() async {
     try {
-      var downLinks = await FirebaseFirestore.instance
-          .collection('playlists')
-          .orderBy('title')
-          .get();
+      final downLinks = await FirebaseFirestore.instance.collection('playlists').orderBy('title').get();
 
       return downLinks.docs.map((doc) {
-        PlaylistModel playlist = PlaylistModel.fromDocument(doc);
+        final PlaylistModel playlist = PlaylistModel.fromDocument(doc);
         return playlist;
       }).toList();
     } catch (e) {
@@ -67,12 +58,9 @@ class HomeRepositoryImpl implements HomeRepository {
             fileName,
           )
           .putFile(file);
-      await task.whenComplete(() async =>
-          audioModel.audio = await task.snapshot.ref.getDownloadURL());
+      await task.whenComplete(() async => audioModel.audio = await task.snapshot.ref.getDownloadURL());
 
-      await firestore
-          .collection('playlists/$playlistName/audios')
-          .add(audioModel.toMap());
+      await firestore.collection('playlists/$playlistName/audios').add(audioModel.toMap());
 
       log('AUDIO: ${audioModel.audio}');
       onSuccess();
@@ -82,42 +70,28 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   @override
-  Future<void> addToMyPlaylist(
-      {required AudioModel audio,
-      required Function onFail,
-      required Function onSuccess}) async {
+  Future<void> addToMyPlaylist({required AudioModel audio, required Function onFail, required Function onSuccess}) async {
     try {
-      UserModel user = UserModel.fromMap(box.read('user'));
-      await firestore
-          .collection('users/${user.uid}/my_playlist')
-          .doc(audio.id)
-          .set(audio.toMap())
-          .then(
+      final UserModel user = UserModel.fromMap(box.read('user'));
+      await firestore.collection('users/${user.uid}/my_playlist').doc(audio.id).set(audio.toMap()).then(
             (value) => onSuccess(),
           );
     } catch (e) {
       onFail();
-      log("Falha ao adicionar audio na minha playlist: ${e.toString()}");
+      log('Falha ao adicionar audio na minha playlist: ${e.toString()}');
     }
   }
 
   @override
-  Future<void> removeFromMyPlaylist(
-      {required AudioModel audio,
-      required Function onSuccess,
-      required Function onFail}) async {
+  Future<void> removeFromMyPlaylist({required AudioModel audio, required Function onSuccess, required Function onFail}) async {
     try {
-      UserModel user = UserModel.fromMap(box.read('user'));
-      await firestore
-          .collection('users/${user.uid}/my_playlist')
-          .doc(audio.id)
-          .delete()
-          .then(
+      final UserModel user = UserModel.fromMap(box.read('user'));
+      await firestore.collection('users/${user.uid}/my_playlist').doc(audio.id).delete().then(
             (value) => onSuccess(),
           );
     } catch (e) {
       onFail();
-      log("Falha ao deletar audio da minha playlist: ${e.toString()}");
+      log('Falha ao deletar audio da minha playlist: ${e.toString()}');
     }
   }
 
@@ -131,24 +105,19 @@ class HomeRepositoryImpl implements HomeRepository {
     try {
       if (audio.audio != null) {
         if (audio.audio!.contains('firebasestorage')) {
-          String fileUrl = Uri.decodeFull(path.basename(audio.audio!))
-              .replaceAll(RegExp(r'(\?alt).*'), '');
+          final String fileUrl = Uri.decodeFull(path.basename(audio.audio!)).replaceAll(RegExp(r'(\?alt).*'), '');
           final Reference ref = storage.ref().child(fileUrl);
           log('fileUrl: $fileUrl');
           await ref.delete();
         }
       }
 
-      await firestore
-          .collection('playlists/$playlistName/audios')
-          .doc(audio.id)
-          .delete()
-          .then(
+      await firestore.collection('playlists/$playlistName/audios').doc(audio.id).delete().then(
             (value) => onSuccess(),
           );
     } catch (e) {
       onFail();
-      log("Falha ao deletar audio do banco! ${e.toString()}");
+      log('Falha ao deletar audio do banco! ${e.toString()}');
     }
   }
 }

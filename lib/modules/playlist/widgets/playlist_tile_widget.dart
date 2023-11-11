@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hmbplayer/core/ui/theme_extensions.dart';
-import 'package:hmbplayer/modules/playlist/playlist_controller.dart';
+import '../../../core/ui/theme_extensions.dart';
+import '../playlist_controller.dart';
 
 import '../../../models/audio_model.dart';
 
@@ -13,12 +13,12 @@ class PlaylistTile extends StatelessWidget {
   final bool isUserPlay;
 
   PlaylistTile({
-    Key? key,
+    super.key,
     required this.audio,
     required this.playlistName,
     required this.isLocal,
     required this.isUserPlay,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,27 +35,21 @@ class PlaylistTile extends StatelessWidget {
         ),
         child: ListTile(
           style: ListTileStyle.drawer,
-          iconColor: controller.currentAudio.value.id == audio.id
-              ? context.themeGreen
-              : Colors.white60,
+          iconColor: controller.currentAudio.value.id == audio.id ? context.themeGreen : Colors.white60,
           onTap: () {
             controller.setSelected(audio);
           },
           dense: false,
-          leading: Icon(controller.currentAudio.value.id == audio.id
-              ? Icons.play_arrow_outlined
-              : Icons.play_arrow_rounded),
+          leading: Icon(controller.currentAudio.value.id == audio.id ? Icons.play_arrow_outlined : Icons.play_arrow_rounded),
           title: Text(
-            "${audio.title} (${audio.author})",
+            '${audio.title} (${audio.author})',
             maxLines: 2,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               // shadows: controller.currentAudio.value.id == audio.id
               //     ? [const Shadow(color: Colors.white, blurRadius: 1)]
               //     : [],
-              color: controller.currentAudio.value.id == audio.id
-                  ? context.themeGreen
-                  : Colors.white60,
+              color: controller.currentAudio.value.id == audio.id ? context.themeGreen : Colors.white60,
             ),
           ),
           trailing: isLocal
@@ -71,17 +65,14 @@ class PlaylistTile extends StatelessWidget {
                                 icon: const Icon(Icons.remove_circle),
                                 onPressed: () {
                                   Get.defaultDialog(
-                                    title: "Remover?",
-                                    content:
-                                        Text('Remover audio ${audio.title}?'),
+                                    title: 'Remover?',
+                                    content: Text('Remover audio ${audio.title}?'),
                                     textConfirm: 'Confirmar',
                                     confirmTextColor: Colors.white,
                                     onConfirm: () {
                                       Get.back();
                                       if (controller.isAdmin()) {
-                                        controller.removeAudio(
-                                            audio: audio,
-                                            playlistName: playlistName);
+                                        controller.removeAudio(audio: audio, playlistName: playlistName);
                                       }
                                     },
                                   );
@@ -89,17 +80,13 @@ class PlaylistTile extends StatelessWidget {
                               )
                             : const SizedBox(),
                         IconButton(
-                          tooltip: isUserPlay
-                              ? "Remover ${audio.title} da minha playlist!"
-                              : "Adicionar ${audio.title} à minha playlist!",
+                          tooltip: isUserPlay ? 'Remover ${audio.title} da minha playlist!' : 'Adicionar ${audio.title} à minha playlist!',
                           splashColor: Colors.green,
                           highlightColor: Colors.green,
                           onPressed: () {
                             Get.defaultDialog(
-                              title: isUserPlay ? "Remover?" : "Adicionar?",
-                              content: Text(isUserPlay
-                                  ? 'Remover o audio ${audio.title} da minha playlist?'
-                                  : 'Adicionar o audio ${audio.title} na minha playlist?'),
+                              title: isUserPlay ? 'Remover?' : 'Adicionar?',
+                              content: Text(isUserPlay ? 'Remover o audio ${audio.title} da minha playlist?' : 'Adicionar o audio ${audio.title} na minha playlist?'),
                               textConfirm: 'Confirmar',
                               confirmTextColor: Colors.white,
                               onConfirm: () {
@@ -112,9 +99,7 @@ class PlaylistTile extends StatelessWidget {
                               },
                             );
                           },
-                          icon: Icon(isUserPlay
-                              ? Icons.playlist_remove_rounded
-                              : Icons.playlist_add_rounded),
+                          icon: Icon(isUserPlay ? Icons.playlist_remove_rounded : Icons.playlist_add_rounded),
                         ),
                       ],
                     ),

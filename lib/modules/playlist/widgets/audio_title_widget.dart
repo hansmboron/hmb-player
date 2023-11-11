@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hmbplayer/modules/playlist/playlist_controller.dart';
+import '../playlist_controller.dart';
 import 'package:marquee/marquee.dart';
 
 class AudioTitle extends StatelessWidget {
   final PlaylistController controller = Get.find();
   AudioTitle({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +22,7 @@ class AudioTitle extends StatelessWidget {
               height: 30,
               width: double.maxFinite,
               child: Marquee(
-                text: controller.currentAudio.value.id != null
-                    ? controller.currentAudio.value.title ?? ''
-                    : 'Nenhum audio selecionado',
+                text: controller.currentAudio.value.id != null ? controller.currentAudio.value.title ?? '' : 'Nenhum audio selecionado',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 24,
@@ -42,9 +40,7 @@ class AudioTitle extends StatelessWidget {
               height: 30,
               width: double.maxFinite,
               child: Marquee(
-                text: controller.currentAudio.value.id != null
-                    ? controller.currentAudio.value.title ?? ''
-                    : 'Nenhum audio selecionado',
+                text: controller.currentAudio.value.id != null ? controller.currentAudio.value.title ?? '' : 'Nenhum audio selecionado',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 24,

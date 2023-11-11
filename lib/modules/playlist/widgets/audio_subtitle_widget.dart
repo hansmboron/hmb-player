@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hmbplayer/modules/playlist/playlist_controller.dart';
+import '../playlist_controller.dart';
 
 class AudioSubtitle extends StatelessWidget {
   final PlaylistController controller = Get.find();
   AudioSubtitle({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +19,7 @@ class AudioSubtitle extends StatelessWidget {
           children: <Widget>[
             Center(
               child: Text(
-                controller.currentAudio.value.id != null
-                    ? controller.currentAudio.value.author ?? ''
-                    : ' ',
+                controller.currentAudio.value.id != null ? controller.currentAudio.value.author ?? '' : ' ',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
@@ -36,9 +34,7 @@ class AudioSubtitle extends StatelessWidget {
             ),
             Center(
               child: Text(
-                controller.currentAudio.value.id != null
-                    ? controller.currentAudio.value.author ?? ''
-                    : ' ',
+                controller.currentAudio.value.id != null ? controller.currentAudio.value.author ?? '' : ' ',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontStyle: FontStyle.italic,

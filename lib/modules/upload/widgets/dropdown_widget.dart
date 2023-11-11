@@ -8,15 +8,7 @@ class DropdownWidget extends StatelessWidget {
   final List<DropdownMenuItem<String>>? items;
   final Color? dropdownColor;
 
-  const DropdownWidget(
-      {Key? key,
-      required this.onChanged,
-      this.hint = '',
-      required this.value,
-      required this.items,
-      this.dropdownColor,
-      this.onTap})
-      : super(key: key);
+  const DropdownWidget({super.key, required this.onChanged, this.hint = '', required this.value, required this.items, this.dropdownColor, this.onTap});
 
   @override
   Widget build(BuildContext context) {

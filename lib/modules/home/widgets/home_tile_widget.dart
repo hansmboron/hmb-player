@@ -8,9 +8,9 @@ class PlaylistTile extends StatelessWidget {
   final DocumentSnapshot snapshot;
 
   const PlaylistTile({
-    Key? key,
+    super.key,
     required this.snapshot,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -54,8 +54,7 @@ class PlaylistTile extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              subtitle:
-                  Text(snapshot.get('type') == 0 ? 'Músicas' : 'Audiobook'),
+              subtitle: Text(snapshot.get('type') == 0 ? 'Músicas' : 'Audiobook'),
               trailing: Icon(
                 Icons.keyboard_arrow_right_rounded,
                 size: 36,

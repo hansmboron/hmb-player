@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hmbplayer/models/audio_model.dart';
+import '../../models/audio_model.dart';
 
 import './upload_controller.dart';
 import 'widgets/dropdown_widget.dart';
 
 class UploadPage extends GetView<UploadController> {
-  UploadPage({Key? key}) : super(key: key);
+  UploadPage({super.key});
   final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    Size _size = MediaQuery.of(context).size;
+    final Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Upload Audio'),
@@ -19,13 +19,12 @@ class UploadPage extends GetView<UploadController> {
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
-        padding:
-            EdgeInsets.symmetric(vertical: 24, horizontal: _size.width * 0.04),
+        padding: EdgeInsets.symmetric(vertical: 24, horizontal: size.width * 0.04),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
-              Obx(() => Text("Audio: ${controller.audioSelected.value}")),
+              Obx(() => Text('Audio: ${controller.audioSelected.value}')),
               const SizedBox(height: 8),
               SizedBox(
                 height: 50,
@@ -85,16 +84,16 @@ class UploadPage extends GetView<UploadController> {
                   items: controller.playlists.map(
                     (p) {
                       return DropdownMenuItem<String>(
+                        value: p?.id ?? '',
+                        onTap: () {
+                          controller.playSelected.value = p?.id ?? 'Rock';
+                        },
                         child: Text(
                           p?.title ?? '',
                           style: const TextStyle(
                             color: Colors.black,
                           ),
                         ),
-                        value: p?.id ?? '',
-                        onTap: () {
-                          controller.playSelected.value = p?.id ?? 'Rock';
-                        },
                       );
                     },
                   ).toList(),
@@ -111,7 +110,7 @@ class UploadPage extends GetView<UploadController> {
                         : () {
                             FocusScope.of(context).unfocus();
                             if (_formKey.currentState!.validate()) {
-                              AudioModel audio = AudioModel(
+                              final AudioModel audio = AudioModel(
                                 title: controller.nameEC.text,
                                 author: controller.authorEC.text,
                               );
