@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
         ...UploadRouters.routers,
         ...UsersRouters.routers,
       ],
-      initialRoute: '/login',
+      initialRoute: '/home',
     );
   }
 }

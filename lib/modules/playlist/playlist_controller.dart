@@ -51,6 +51,7 @@ class PlaylistController extends GetxController with MessagesMixin {
     });
 
     audioPlayer.onPlayerStateChanged.listen((event) async {
+      log(event.name);
       switch (event) {
         case PlayerState.completed:
           duration.value = const Duration(seconds: 0);
